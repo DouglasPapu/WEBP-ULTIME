@@ -46,12 +46,17 @@
       <v-col>
         <h2>Descripción de próximas tareas</h2>
         <v-data-table :items="events" :headers="headers">
-            <template v-slot:item.start="{ item }">
-                <span>{{new Date(item.start).toLocaleString()}}</span>
-            </template>
-            <template v-slot:item.end="{ item }">
-                <span>{{new Date(item.end).toLocaleString()}}</span>
-            </template>
+          <template v-slot:item.start="{ item }">
+            <span>{{ new Date(item.start).toLocaleString() }}</span>
+          </template>
+          <template v-slot:item.end="{ item }">
+            <span>{{ new Date(item.end).toLocaleString() }}</span>
+          </template>
+          <template v-slot:item.state="{ item }">
+            <v-icon :color="item.state ? 'green darken-2' : 'red'">{{
+              item.state ? "how_to_reg" : "unpublished"
+            }}</v-icon>
+          </template>
         </v-data-table>
       </v-col>
     </v-row>
@@ -88,11 +93,11 @@ export default {
     createStart: null,
     extendOriginal: null,
     headers: [
-        {text: 'Name', value: 'name'},
-        {text: 'Start Date', value: 'start'},
-        {text: 'End Date', value: 'end'},
-        {text: 'State', value: 'state'}
-    ]
+      { text: "Name", value: "name" },
+      { text: "Start Date", value: "start" },
+      { text: "End Date", value: "end" },
+      { text: "State", value: "state" },
+    ],
   }),
   mounted() {
     this.$refs.calendar.checkChange();
@@ -219,6 +224,7 @@ export default {
         const secondTimestamp = this.rnd(2, timed ? 8 : 288) * 900000;
         const start = firstTimestamp - (firstTimestamp % 900000);
         const end = start + secondTimestamp;
+        const state = false;
 
         events.push({
           name: this.rndElement(this.names),
@@ -226,6 +232,7 @@ export default {
           start,
           end,
           timed,
+          state,
         });
       }
 
