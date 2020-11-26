@@ -25,8 +25,8 @@ exports.create =  async (req, res, next) =>{
       //create a planner
         
       var plannerUser = await db.query('SELECT * FROM public."User" WHERE username = $1',[user.username])
-      var planner= 'INSERT INTO public."Planner" (user_Id,pl_name) VALUES ($1, $2)';
-      console.log(plannerUser)
+      var planner= 'INSERT INTO public."Planner" (User_Id,pl_name) VALUES ($1, $2)';
+      console.log(plannerUser.rows[0].user_Id)
       await db.query(planner, [plannerUser.rows[0].user_Id, 'initPlanner']);
 
       res.send('User created');
