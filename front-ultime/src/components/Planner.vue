@@ -2,7 +2,11 @@
   <div class="container">
     <v-row ref="Calendar" class="Fill-height">
       <v-col>
-        <h2>Calendario</h2>
+        <h1 class="text-center">Calendario</h1>
+        <v-divider/>
+        <p class="text-center psub">
+          Utiliza este planeador para organizar tus tareas y tu tiempo durante la semana. 
+        </p>
         <v-toolbar flat>
           <v-btn fab text small color="grey darken-2" @click="prev">
             <v-icon small> mdi-chevron-left </v-icon>
@@ -14,7 +18,7 @@
             <v-icon small> mdi-chevron-right </v-icon>
           </v-btn>
         </v-toolbar>
-        <v-sheet height="400">
+        <v-sheet height="600" elevation="15">
           <v-calendar
             ref="calendar"
             v-model="value"
@@ -44,7 +48,11 @@
     </v-row>
     <v-row ref="Events-Description">
       <v-col>
-        <h2>Descripción de próximas tareas</h2>
+        <h1 class="text-center">Descripción de próximas tareas</h1>
+        <v-divider/>
+        <p class="text-center psub">
+          Aquí está un resumen más detallado de las tareas pendientes en tu planeador.
+        </p>
         <v-data-table :items="events" :headers="headers">
           <template v-slot:item.start="{ item }">
             <span>{{ new Date(item.start).toLocaleString() }}</span>
