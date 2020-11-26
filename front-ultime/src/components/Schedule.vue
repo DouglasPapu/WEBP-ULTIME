@@ -18,12 +18,13 @@
               :events="events"
               :weekdays="[1, 2, 3, 4, 5, 6, 0]"
               locale="es"
+              :now="today"
               color="primary"
               type="week"
               class="my-event.with-time"
-              :hide-date="true"
+              hide-date="true"
               :short-weekdays="false"
-              :show-weekday="true"
+              :show-week="false"
               :category-show-all="true"
             ></v-calendar>
           </v-sheet>
@@ -65,6 +66,7 @@
                     label="Nombre de la materia"
                     required
                     prepend-icon="mdi-ballot-outline"
+                    v-model="subject.sub_name"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6">
@@ -80,6 +82,7 @@
                       'Domingo',
                     ]"
                     label="Día de la semana"
+                    v-model="subject.sub_day"
                     required
                   ></v-select>
                 </v-col>
@@ -88,11 +91,11 @@
                 <!--Hora de inicio-->
                 <v-col cols="12" sm="6">
                   <v-menu
-                    ref="menu"
+                    ref="menu2"
                     v-model="menu2"
                     :close-on-content-click="false"
                     :nudge-right="40"
-                    :return-value.sync="time"
+                    :return-value.sync="subject.start_time"
                     transition="scale-transition"
                     offset-y
                     max-width="290px"
@@ -100,7 +103,7 @@
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
-                        v-model="time"
+                        v-model="subject.start_time"
                         label="Hora de inicio"
                         prepend-icon="mdi-clock-time-four-outline"
                         readonly
@@ -110,20 +113,20 @@
                     </template>
                     <v-time-picker
                       v-if="menu2"
-                      v-model="time"
+                      v-model="subject.start_time"
                       full-width
-                      @click:minute="$refs.menu.save(time)"
+                      @click:minute="$refs.menu2.save(subject.start_time)"
                     ></v-time-picker>
                   </v-menu>
                 </v-col>
                 <!--Hora final-->
                 <v-col cols="12" sm="6">
                   <v-menu
-                    ref="menu"
+                    ref="menu3"
                     v-model="menu3"
                     :close-on-content-click="false"
                     :nudge-right="40"
-                    :return-value.sync="time3"
+                    :return-value.sync="subject.end_time"
                     transition="scale-transition"
                     offset-y
                     max-width="290px"
@@ -131,8 +134,8 @@
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
-                        v-model="time3"
-                        label="Hora de inicio"
+                        v-model="subject.end_time"
+                        label="Hora de finalización"
                         prepend-icon="mdi-clock-time-four-outline"
                         readonly
                         v-bind="attrs"
@@ -141,9 +144,9 @@
                     </template>
                     <v-time-picker
                       v-if="menu3"
-                      v-model="time3"
+                      v-model="subject.end_time"
                       full-width
-                      @click:minute="$refs.menu.save(time3)"
+                      @click:minute="$refs.menu3.save(subject.end_time)"
                     ></v-time-picker>
                   </v-menu>
                 </v-col>
@@ -169,18 +172,18 @@
 
 export default {
   data: () => ({
-    today: "2020-11-25",
+    today: new Date().toISOString().substr(0, 10),
+    subject: {
+      fk_schedule: 0,
+      sub_name: "",
+      start_time: null,
+      end_time: null,
+      sub_day: "",
+    },
     loading: false,
     dialog: false,
-    notifications: false,
-    sound: true,
-    time: null,
     menu2: false,
-    modal2: false,
-    time3: null,
     menu3: false,
-    modal3: false,
-    widgets: false,
     events: [
       {
         name: "Creatividad empresarial",
@@ -188,7 +191,6 @@ export default {
         end: "2020-11-25 10:00",
       },
     ],
-    subject: {},
   }),
   mounted() {
     this.$refs.calendar.scrollToTime("7:00");
