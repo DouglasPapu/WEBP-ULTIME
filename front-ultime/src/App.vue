@@ -12,7 +12,7 @@
       </v-container>
     </v-main>
 
-    <v-footer color="white" v-bind="localAttrs" :padless="padless" app>
+    <v-footer color="white" app>
       <Footer></Footer>
     </v-footer>
   </v-app>
