@@ -18,5 +18,5 @@ exports.create = async (req, res, next) => {
     subject.end_time,
     subject.sub_day,
   ]);
-  res.send("User created");
+  res.send("Subject created");
 };
