@@ -11,7 +11,7 @@ exports.index = async (req, res, next) =>{
 exports.create =  async (req, res, next) =>{
   var sqlvalidate= 'SELECT * FROM public."User" WHERE username = $1';
   var validate = db.query(sqlvalidate,[req.body.username])
-  console.log(validate)
+  
     let user = {       
         lastname: req.body.lastname,
         firstname: req.body.firstname,
