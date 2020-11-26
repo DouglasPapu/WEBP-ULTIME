@@ -9,6 +9,7 @@ exports.index = async (req, res, next) =>{
   };
 
 exports.create =  async (req, res, next) =>{
+
   var sqlvalidate= 'SELECT * FROM public."User" WHERE username = $1';
   var validate = db.query(sqlvalidate,[req.body.username])
   
@@ -20,7 +21,14 @@ exports.create =  async (req, res, next) =>{
       }     
     if(validate !=='Promise { <pending> }'){
       var sql= 'INSERT INTO public."User" (lastname,firstname, passwd,username) VALUES ($1, $2, $3, $4)';
-      await db.query(sql,[user.lastname,user.firstname,user.passwd,user.username])   
+      var response = await db.query(sql,[user.lastname,user.firstname,user.passwd,user.username]) 
+      //create a planner
+        
+      var plannerUser = await db.query('SELECT * FROM public."User" WHERE username = $1',[user.username])
+      var planner= 'INSERT INTO public."Planner" (user_Id,pl_name) VALUES ($1, $2)';
+      console.log(plannerUser)
+      await db.query(planner, [plannerUser.rows[0].user_Id, 'initPlanner']);
+
       res.send('User created');
     }else{
       res.send('The username already exists')
