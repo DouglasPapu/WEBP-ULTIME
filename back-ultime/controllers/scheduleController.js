@@ -1,9 +1,9 @@
 const db = require("../config/posgres");
 
 exports.create = async (req, res, next) => {
-  var sql = 'INSERT INTO public."Schedule" (User_id,semester) VALUES ($1, $2)';
+  var sql = 'INSERT INTO public."Schedule" (fk_user,semester) VALUES ($1, $2)';
   let schedule = {
-    User_id: req.body.User_id,
+    User_id: req.body.fk_user,
     semester: req.body.semester,
   };
 

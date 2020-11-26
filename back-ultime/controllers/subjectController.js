@@ -2,9 +2,9 @@ const db = require("../config/posgres");
 
 exports.create = async (req, res, next) => {
   var sql =
-    'INSERT INTO public."Subject" (Schedule_id,sub_name, start_time,end_time,sub_day) VALUES ($1, $2, $3, $4, $5)';
+    'INSERT INTO public."Subject" (fk_schedule,sub_name, start_time,end_time,sub_day) VALUES ($1, $2, $3, $4, $5)';
   let subject = {
-    Schedule_id: req.body.Schedule_id,
+    fk_schedule: req.body.fk_schedule,
     sub_name: req.body.sub_name,
     start_time: req.body.start_time,
     end_time: req.body.end_time,
@@ -12,7 +12,7 @@ exports.create = async (req, res, next) => {
   };
 
   await db.query(sql, [
-    subject.Schedule_id,
+    subject.fk_schedule,
     subject.sub_name,
     subject.start_time,
     subject.end_time,
