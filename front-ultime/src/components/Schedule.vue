@@ -166,6 +166,7 @@
 </template>
 <script>
 //import moment from "moment";
+
 export default {
   data: () => ({
     today: "2020-11-25",
@@ -187,6 +188,7 @@ export default {
         end: "2020-11-25 10:00",
       },
     ],
+    subject: {},
   }),
   mounted() {
     this.$refs.calendar.scrollToTime("7:00");
