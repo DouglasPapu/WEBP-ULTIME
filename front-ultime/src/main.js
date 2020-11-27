@@ -6,6 +6,7 @@ import VueRouter from "vue-router";
 import Planner from "./components/Planner";
 import Schedule from "./components/Schedule";
 import Home from "./components/Home";
+import Main from "./components/Main";
 
 const routes = [
   {
@@ -19,6 +20,10 @@ const routes = [
   {
     path: "/schedule",
     component: Schedule,
+  },
+  {
+    path: "/main",
+    component: Main,
   },
 ];
 
