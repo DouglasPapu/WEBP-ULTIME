@@ -88,109 +88,120 @@
     </v-card>
     <v-row justify="center">
       <v-dialog v-model="dialog" persistent max-width="600px">
-        <v-card>
-          <v-card-title>
-            <span class="headline">Agrega una materia</span>
-          </v-card-title>
-          <v-card-text>
-            <v-container>
-              <v-row>
-                <v-col cols="12" sm="6">
-                  <v-text-field
-                    label="Nombre de la materia"
-                    required
-                    prepend-icon="mdi-ballot-outline"
-                    v-model="subject.sub_name"
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="12" sm="6">
-                  <v-select
-                    prepend-icon="mdi-calendar-cursor"
-                    :items="daysweek"
-                    item-text="day"
-                    item-value="number"
-                    label="Día de la semana"
-                    v-model="subject.sub_day"
-                    required
-                  ></v-select>
-                </v-col>
-              </v-row>
-              <v-row>
-                <!--Hora de inicio-->
-                <v-col cols="12" sm="6">
-                  <v-menu
-                    ref="menu2"
-                    v-model="menu2"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    :return-value.sync="subject.start_time"
-                    transition="scale-transition"
-                    offset-y
-                    max-width="290px"
-                    min-width="290px"
-                  >
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-text-field
+        <v-form v-model="isValid">
+          <v-card>
+            <v-card-title>
+              <span class="headline">Agrega una materia</span>
+            </v-card-title>
+            <v-card-text>
+              <v-container>
+                <v-row>
+                  <v-col cols="12" sm="6">
+                    <v-text-field
+                      label="Nombre de la materia"
+                      required
+                      prepend-icon="mdi-ballot-outline"
+                      v-model="subject.sub_name"
+                      :rules="subjectRules"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="6">
+                    <v-select
+                      prepend-icon="mdi-calendar-cursor"
+                      :items="daysweek"
+                      item-text="day"
+                      item-value="number"
+                      label="Día de la semana"
+                      v-model="subject.sub_day"
+                      required
+                      :rules="dayRules"
+                    ></v-select>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <!--Hora de inicio-->
+                  <v-col cols="12" sm="6">
+                    <v-menu
+                      ref="menu2"
+                      v-model="menu2"
+                      :close-on-content-click="false"
+                      :nudge-right="40"
+                      :return-value.sync="subject.start_time"
+                      transition="scale-transition"
+                      offset-y
+                      max-width="290px"
+                      min-width="290px"
+                    >
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-text-field
+                          v-model="subject.start_time"
+                          label="Hora de inicio"
+                          prepend-icon="mdi-clock-time-four-outline"
+                          readonly
+                          v-bind="attrs"
+                          v-on="on"
+                          :rules="startRules"
+                        ></v-text-field>
+                      </template>
+                      <v-time-picker
+                        v-if="menu2"
                         v-model="subject.start_time"
-                        label="Hora de inicio"
-                        prepend-icon="mdi-clock-time-four-outline"
-                        readonly
-                        v-bind="attrs"
-                        v-on="on"
-                      ></v-text-field>
-                    </template>
-                    <v-time-picker
-                      v-if="menu2"
-                      v-model="subject.start_time"
-                      full-width
-                      @click:minute="$refs.menu2.save(subject.start_time)"
-                    ></v-time-picker>
-                  </v-menu>
-                </v-col>
-                <!--Hora final-->
-                <v-col cols="12" sm="6">
-                  <v-menu
-                    ref="menu3"
-                    v-model="menu3"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    :return-value.sync="subject.end_time"
-                    transition="scale-transition"
-                    offset-y
-                    max-width="290px"
-                    min-width="290px"
-                  >
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-text-field
+                        full-width
+                        @click:minute="$refs.menu2.save(subject.start_time)"
+                      ></v-time-picker>
+                    </v-menu>
+                  </v-col>
+                  <!--Hora final-->
+                  <v-col cols="12" sm="6">
+                    <v-menu
+                      ref="menu3"
+                      v-model="menu3"
+                      :close-on-content-click="false"
+                      :nudge-right="40"
+                      :return-value.sync="subject.end_time"
+                      transition="scale-transition"
+                      offset-y
+                      max-width="290px"
+                      min-width="290px"
+                    >
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-text-field
+                          v-model="subject.end_time"
+                          label="Hora de finalización"
+                          prepend-icon="mdi-clock-time-four-outline"
+                          readonly
+                          v-bind="attrs"
+                          v-on="on"
+                          :rules="endRules"
+                        ></v-text-field>
+                      </template>
+                      <v-time-picker
+                        v-if="menu3"
                         v-model="subject.end_time"
-                        label="Hora de finalización"
-                        prepend-icon="mdi-clock-time-four-outline"
-                        readonly
-                        v-bind="attrs"
-                        v-on="on"
-                      ></v-text-field>
-                    </template>
-                    <v-time-picker
-                      v-if="menu3"
-                      v-model="subject.end_time"
-                      full-width
-                      @click:minute="$refs.menu3.save(subject.end_time)"
-                    ></v-time-picker>
-                  </v-menu>
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="dialog = false">
-              Cancelar
-            </v-btn>
-            <v-btn color="blue darken-1" text @click="addSubjectToSchedule">
-              Añadir
-            </v-btn>
-          </v-card-actions>
-        </v-card>
+                        full-width
+                        @click:minute="$refs.menu3.save(subject.end_time)"
+                      ></v-time-picker>
+                    </v-menu>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue darken-1" text @click="dialog = false">
+                Cancelar
+              </v-btn>
+              <v-btn
+                :disabled="!isValid"
+                color="blue darken-1"
+                text
+                @click="addSubjectToSchedule"
+              >
+                Añadir
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-form>
       </v-dialog>
     </v-row>
     <Alert></Alert>
@@ -243,10 +254,14 @@ export default {
     selectedElement: null,
     selectedOpen: false,
     selectedEvent: {},
-    loading: false,
     dialog: false,
     menu2: false,
     menu3: false,
+    isValid: true,
+    subjectRules: [(name) => !!name || "El nombre de la materia es requerido"],
+    dayRules: [(day) => !!day || "El día es requerido"],
+    startRules: [(start) => !!start || "La hora de inicio es requerida"],
+    endRules: [(end) => !!end || "La hora final es requerida"],
   }),
   mounted() {
     this.$refs.calendar.scrollToTime("6:00");
@@ -281,6 +296,9 @@ export default {
   computed: {
     subjects() {
       return this.$store.state.subjects;
+    },
+    loading() {
+      return this.$store.state.loading;
     },
   },
 };

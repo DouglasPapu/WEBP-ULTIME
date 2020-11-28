@@ -11,6 +11,7 @@ export default new Vuex.Store({
     iconMessage: "",
     subjects: [],
     tasks: [],
+    loading: false,
   },
   mutations: {
     addSubjectToSchedule(state, payload) {
@@ -103,6 +104,7 @@ export default new Vuex.Store({
           replaceSub.push(objNew);
         });
         state.subjects = replaceSub;
+        this.state.loading = false;
       }
     },
     deleteSubject(state, payload) {
@@ -134,10 +136,13 @@ export default new Vuex.Store({
       commit("addSubjectToSchedule", payload);
     },
     getSubjects({ commit }) {
+      this.state.loading = true;
       axios
         .get("http://localhost:3000/api/subjects/", { params: { fk_user: 2 } })
         .then((res) => {
-          commit("SET_SUBJECTS", res.data);
+          if (res.status === 200) {
+            commit("SET_SUBJECTS", res.data);
+          }
         });
     },
     refreshAlert({ commit }) {
