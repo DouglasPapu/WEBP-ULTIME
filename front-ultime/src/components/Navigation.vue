@@ -10,7 +10,7 @@
       <v-list-item link>
         <v-list-item-content>
           <v-list-item-title class="title">
-            Juan Lopez Rubio
+            {{firstname}}
           </v-list-item-title>
           <v-list-item-subtitle>juanlobio@gmail.com</v-list-item-subtitle>
         </v-list-item-content>
@@ -49,7 +49,13 @@
 </template>
 
 <script>
-export default {};
+export default {
+  data(){
+    return{
+      firstname: this.$store.getters.getUserLoged.firstname,
+    }
+  }
+};
 </script>
 
 <style>

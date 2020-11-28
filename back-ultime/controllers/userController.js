@@ -26,12 +26,12 @@ exports.create =  async (req, res, next) =>{
         
       var plannerUser = await db.query('SELECT * FROM public."User" WHERE username = $1',[user.username])
       var planner= 'INSERT INTO public."Planner" (fk_user,pl_name) VALUES ($1, $2)';
-      console.log(plannerUser.rows[0].pk_user)
+      
       await db.query(planner, [plannerUser.rows[0].pk_user, 'initPlanner']);
 
-      res.send('User created');
+      res.status(200).send({message:'User created'});
     }else{
-      res.send('The username already exists')
+      res.status(406).send({message:'The username already exists'})
     }
    
 
@@ -42,12 +42,26 @@ exports.create =  async (req, res, next) =>{
    var username = req.body.username
    var password = md5(req.body.passwd)  
     var sql = 'SELECT * FROM public."User" WHERE username = $1';
-    const response = await db.query(sql, [username]);      
-    console.log("ENTRANDO",response.rows[0].username)
-    if (username === response.rows[0].username && password === response.rows[0].passwd){
-        return res.send('user loged')
-    } else{
-      return res.send('The users no exists');
+    
+    const response = await db.query(sql, [username]);   
+
+    if(response.rows[0] !== undefined){
+      
+      if (username === response.rows[0].username ){
+        if(password === response.rows[0].passwd){
+          res.status(200).send(response.rows)
+        }else{
+          res.status(406).send({message:'The password is wrong'});
+        }
+        
+      } else{
+        res.status(406).send({message:'The username is incorrect'});
+      }
+      
+    }else{
+     
+      return res.status(406).send({message:'The users no exists'});      
     }
+    
     
 };

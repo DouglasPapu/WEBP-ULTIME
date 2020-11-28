@@ -12,7 +12,14 @@
             <v-row class="pt-16" align="center" justify="center">
               <div class="display-3 pt-15">{{ message[i] }}</div>
               <v-col sm="12" align="center">
-                <v-btn color="primary" elevation="2" x-large @click="dialogForm = true"> Registrate</v-btn>
+                <v-btn
+                  color="primary"
+                  elevation="2"
+                  x-large
+                  @click="dialogForm = true;"
+                >
+                  Registrate</v-btn
+                >
               </v-col>
             </v-row>
           </v-img>
@@ -20,85 +27,74 @@
       </v-carousel-item>
     </v-carousel>
     <v-row justify="center">
-    <v-dialog
-      v-model="dialogForm"
-      
-      max-width="600px"
-    >
-     
-      <v-card>
-        <v-card-title>
-          <span class="headline">Perfil de usuario</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col
-                cols="12"
-                sm="6"
-                md="4"
-              >
-                <v-text-field
-                  label="Nombre"
-                  required
-                ></v-text-field>
-              </v-col>
-              <v-col
-                cols="12"
-                sm="6"
-                md="4"
-              >
-                <v-text-field
-                  label="Apellido"
-                  
-                ></v-text-field>
-              </v-col>
-              <v-col
-                cols="12"
-                sm="6"
-                md="4"
-              >                
-              </v-col>
-              <v-col cols="12">
-                <v-text-field
-                  label="Nombre de usuario"
-                  required
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12">
-                <v-text-field
-                  label="Password"
-                  type="password"
-                  required
-                ></v-text-field>
-              </v-col>              
-               
-            </v-row>
-          </v-container>
-          <!-- <small>*indicates required field</small> -->
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            color="blue darken-1"
-            text
-            @click="dialogForm = false"
-          >
-            Cancelar
-          </v-btn>
-          <v-btn
-            color="blue darken-1"
-            text
-            @click="dialogForm = false"
-          >
-            Crear
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </v-row>
+      <v-dialog v-model="dialogForm" max-width="600px">
+        <v-card>
+          <v-card-title>
+            <span class="headline">Perfil de usuario</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="12" sm="6" md="4">
+                  <v-text-field
+                    label="Nombre"
+                    required
+                    v-model="user_reg.firstname"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="6" md="4">
+                  <v-text-field
+                    label="Apellido"
+                    v-model="user_reg.lastname"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="6" md="4"> </v-col>
+                <v-col cols="12">
+                  <v-text-field
+                    label="Nombre de usuario"
+                    required
+                    v-model="user_reg.username"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12">
+                  <v-text-field
+                    label="Password"
+                    type="text"
+                    required
+                    v-model="user_reg.passwd"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+            </v-container>
+            <!-- <small>*indicates required field</small> -->
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" text @click="dialogForm = false">
+              Cancelar
+            </v-btn>
+            <v-btn
+              color="blue darken-1"
+              text
+              @click="
+                dialogForm = false;
+                register();
+              "
+            >
+              Crear
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+        <v-dialog :value="registerDialog" max-width="200">
+          <v-alert :value="registerDialog" dismissible :type= typereg>
+          {{ messageReg }}
+        </v-alert>
 
-    <v-row justify-md>
+        </v-dialog>
+    </v-row>
+
+    <v-row>
       <v-col cols="12" sm="6">
         <v-card class="mx-auto" height="415" max-width="480" outlined>
           <v-card-title class="title"
@@ -110,13 +106,35 @@
             >Bienvenido, por favor ingresa tu cuenta</v-card-subtitle
           >
           <v-card-text>
-            <v-text-field v-model="user_log.username" label="Nombre de usuario" outlined></v-text-field>
-            <v-text-field v-model="user_log.passwd" label="Contraseña" outlined></v-text-field>
+            <v-text-field
+              v-model="user_log.username"
+              label="Nombre de usuario"
+              outlined
+            ></v-text-field>
+            <v-text-field
+              :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
+              @click:append="show1 = !show1"
+              :type="show1 ? 'text' : 'password'"
+              v-model="user_log.passwd"
+              label="Contraseña"
+              outlined
+            ></v-text-field>
           </v-card-text>
           <v-card-actions>
-            <v-btn block @click="login" color="primary" elevation="2" x-large> Ingresar</v-btn>
+            <v-btn outlined block x-large color="primary" @click="login">
+              Ingresar
+            </v-btn>
           </v-card-actions>
         </v-card>
+        <v-dialog :value="alertLog" max-width="200">
+          <v-alert :value="alertLog" dismissible :type= typeLog>
+          {{ messageLog }}
+        </v-alert>
+
+        </v-dialog>
+         
+       
+        
       </v-col>
       <v-col cols="12" sm="6">
         <v-card
@@ -141,7 +159,7 @@
     </v-banner>
 
     <div class="container">
-      <v-row justify-md>
+      <v-row>
         <v-col cols="12" sm="6">
           <v-card
             class="mx-auto"
@@ -191,7 +209,7 @@
           <v-col cols="12" sm="4">
             <v-card-text align="center" class="headline font-weight-medium">
               Conoce a nuestro creadores:<br />
-              <hr color="#FFFFF">
+              <hr color="#FFFFF" />
               Juan martin García<br />
               Douglas Lopez <br />
               Laura Rubio <br />
@@ -208,6 +226,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 export default {
   data() {
     return {
@@ -221,21 +240,85 @@ export default {
         "https://images.unsplash.com/photo-1503551723145-6c040742065b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1750&q=80",
         "https://images.unsplash.com/photo-1503676382389-4809596d5290?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1755&q=80",
       ],
-      dialogForm:false,
+      dialogForm: false,
+      alertLog: false,
+      messageLog: "",
+      typeLog:"",
+      registerDialog:false,
+      typereg:"",
+      messageReg:"",
+      show1: false,
       user_log: {
-        username:"",
-        passwd:"",
+        username: "",
+        passwd: "",
+      },
+      user_reg: {
+        username: "",
+        passwd: "",
+        firstname: "",
+        lastname: "",
       },
     };
   },
-  methods:{
-    login(){
-      console.log(this.user_log)
-    }
-    
+  methods: {
+    ...mapActions(["logUser", "registerUser"]),
+     login() {
+     
+     this.logUser(this.user_log)
+    setTimeout(()=>{       
+       this.messageLog = this.$store.getters.getMessageLog      
+        if(this.messageLog !== ""){  
+          this.alertLog = true;
+          this.typeLog = "error"
+          setTimeout(()=>{
+             this.alertLog = false; 
 
-  }
-  
+          },2000)  
+        }else{
+            this.alertLog = true;
+           this.typeLog = "success"
+           this.messageLog = "Ha ingresado sesion"
+           setTimeout(()=>{
+             this.alertLog = false;  
+
+          },2000) 
+        }
+
+       
+    },2000)
+    
+    },
+    register() {
+      this.registerUser(this.user_reg);
+      console.log(this.user_reg)
+       setTimeout(()=>{       
+       this.messageReg = this.$store.getters.getMessageReg      
+        if(this.messageReg === "Error: el nombre de usuario ya existe."){  
+          this.registerDialog = true;
+          this.typereg = "error"
+          setTimeout(()=>{
+             this.registerDialog = false; 
+
+          },2000)  
+        }else{
+            this.registerDialog = true;
+           this.typereg = "success"          
+           setTimeout(()=>{
+             this.registerDialog = false;  
+
+          },2000)
+          this.user_reg.username = ""
+          this.user_reg.passwd= ""
+          this.user_reg.firstname= ""
+          this.user_reg.lastname=""   
+        }
+
+       
+    },2000)
+      
+    
+    },
+  },
 };
 </script>
 

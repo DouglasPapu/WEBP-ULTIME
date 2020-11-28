@@ -11,7 +11,7 @@ import Main from "./components/Main";
 const routes = [
   {
     path: "/",
-    component: Home,
+    component: Main,
   },
   {
     path: "/planner",
@@ -22,8 +22,8 @@ const routes = [
     component: Schedule,
   },
   {
-    path: "/main",
-    component: Main,
+    path: "/home",
+    component: Home,
   },
 ];
 
