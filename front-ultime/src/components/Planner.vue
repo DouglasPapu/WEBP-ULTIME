@@ -3,9 +3,10 @@
     <v-row ref="Calendar" class="Fill-height">
       <v-col>
         <h1 class="text-center">Calendario</h1>
-        <v-divider/>
+        <v-divider />
         <p class="text-center psub">
-          Utiliza este planeador para organizar tus tareas y tu tiempo durante la semana. 
+          Utiliza este planeador para organizar tus tareas y tu tiempo durante
+          la semana.
         </p>
         <v-toolbar flat>
           <v-btn fab text small color="grey darken-2" @click="prev">
@@ -25,33 +26,180 @@
             color="primary"
             type="week"
             :events="events"
-            :event-color="getEventColor"
             :event-ripple="false"
-            @change="getEvents"
-            @mousedown:event="startDrag"
-            @mousedown:time="startTime"
-            @mousemove:time="mouseMove"
-            @mouseup:time="endDrag"
-            @mouseleave.native="cancelDrag"
           >
-            <template v-slot:event="{ event, timed, eventSummary }">
-              <div class="v-event-draggable" v-html="eventSummary()"></div>
-              <div
-                v-if="timed"
-                class="v-event-drag-bottom"
-                @mousedown.stop="extendBottom(event)"
-              ></div>
-            </template>
           </v-calendar>
+          <v-card>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  color="primary"
+                  dark
+                  absolute
+                  top
+                  right
+                  fab
+                  v-bind="attrs"
+                  v-on="on"
+                  @click="dialog = true"
+                >
+                  <v-icon>mdi-plus</v-icon>
+                </v-btn>
+              </template>
+              <span>Agregar tarea</span>
+            </v-tooltip>
+          </v-card>
         </v-sheet>
       </v-col>
+    </v-row>
+    <v-row justify="center">
+      <v-dialog v-model="dialog" persistent max-width="600">
+        <v-card>
+          <v-card-title> Agregar una tarea </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="12" sm="6">
+                  <v-text-field
+                    label="Nombre de la tarea"
+                    required
+                    prepend-icon="mdi-ballot-outline"
+                  >
+                  </v-text-field>
+                </v-col>
+                <v-col cols="12" sm="6">
+                  <v-menu
+                    ref="menu"
+                    v-model="menu"
+                    :close-on-content-click="false"
+                    :return-value.sync="date"
+                    transition="scale-transition"
+                    offset-y
+                    min-width="290px"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        v-model="date"
+                        label="Fecha de la tarea"
+                        prepend-icon="mdi-calendar"
+                        readonly
+                        v-bind="attrs"
+                        v-on="on"
+                      ></v-text-field>
+                    </template>
+                    <v-date-picker v-model="date" no-title scrollable>
+                      <v-spacer></v-spacer>
+                      <v-btn text color="primary" @click="menu = false">
+                        Cancel
+                      </v-btn>
+                      <v-btn
+                        text
+                        color="primary"
+                        @click="$refs.menu.save(date)"
+                      >
+                        OK
+                      </v-btn>
+                    </v-date-picker>
+                  </v-menu>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12" sm="6">
+                  <v-menu
+                    ref="menuTimeStart"
+                    v-model="menuTimeStart"
+                    :close-on-content-click="false"
+                    :return-value.sync="timeStart"
+                    transition="scale-transition"
+                    offset-y
+                    min-width="290px"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        v-model="timeStart"
+                        label="Hora de inicio"
+                        prepend-icon="mdi-calendar"
+                        readonly
+                        v-bind="attrs"
+                        v-on="on"
+                      ></v-text-field>
+                    </template>
+                    <v-time-picker v-model="timeStart">
+                      <v-spacer></v-spacer>
+                      <v-btn
+                        text
+                        color="warning"
+                        @click="menuTimeStart = false"
+                      >
+                        Cancel
+                      </v-btn>
+                      <v-btn
+                        text
+                        color="primary"
+                        @click="$refs.menuTimeStart.save(timeStart)"
+                      >
+                        OK
+                      </v-btn>
+                    </v-time-picker>
+                  </v-menu>
+                </v-col>
+                <v-col cols="12" sm="6">
+                  <v-menu
+                    ref="menuTimeEnd"
+                    v-model="menuTimeEnd"
+                    :close-on-content-click="false"
+                    :return-value.sync="timeEnd"
+                    transition="scale-transition"
+                    offset-y
+                    min-width="290px"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        v-model="timeEnd"
+                        label="Hora de fin"
+                        prepend-icon="mdi-calendar"
+                        readonly
+                        v-bind="attrs"
+                        v-on="on"
+                      ></v-text-field>
+                    </template>
+                    <v-time-picker v-model="timeEnd">
+                      <v-spacer></v-spacer>
+                      <v-btn text color="warning" @click="menuTimeEnd = false">
+                        Cancel
+                      </v-btn>
+                      <v-btn
+                        text
+                        color="primary"
+                        @click="$refs.menuTimeEnd.save(timeEnd)"
+                      >
+                        OK
+                      </v-btn>
+                    </v-time-picker>
+                  </v-menu>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="red darken-1" text @click="dialog = false">
+              Cancelar
+            </v-btn>
+            <v-btn color="blue darken-1" text @click="saveEvent()">
+              Añadir
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-row>
     <v-row ref="Events-Description">
       <v-col>
         <h1 class="text-center">Descripción de próximas tareas</h1>
-        <v-divider/>
+        <v-divider />
         <p class="text-center psub">
-          Aquí está un resumen más detallado de las tareas pendientes en tu planeador.
+          Aquí está un resumen más detallado de las tareas pendientes en tu
+          planeador.
         </p>
         <v-data-table :items="events" :headers="headers">
           <template v-slot:item.start="{ item }">
@@ -75,7 +223,13 @@
 export default {
   data: () => ({
     value: "",
-    events: [],
+    events: [
+      {
+        name: "Prueba",
+        start: "2020-11-25 07:00",
+        end: "2020-11-25 08:00",
+      },
+    ],
     colors: [
       "#2196F3",
       "#3F51B5",
@@ -85,117 +239,47 @@ export default {
       "#FF9800",
       "#757575",
     ],
-    names: [
-      "Meeting",
-      "Holiday",
-      "PTO",
-      "Travel",
-      "Event",
-      "Birthday",
-      "Conference",
-      "Party",
-    ],
-    dragEvent: null,
-    dragStart: null,
+    menu: false,
+    menuTimeStart: false,
+    menuTimeEnd: false,
+    timeStart: null,
+    timeEnd: null,
+    date: new Date().toISOString().substr(0, 10),
+    dialog: false,
     createEvent: null,
-    createStart: null,
-    extendOriginal: null,
     headers: [
       { text: "Name", value: "name" },
-      { text: "Start Date", value: "start" },
-      { text: "End Date", value: "end" },
+      { text: "Date", value: "date" },
+      { text: "Start Time", value: "start" },
+      { text: "End Time", value: "end" },
       { text: "State", value: "state" },
     ],
   }),
   mounted() {
     this.$refs.calendar.checkChange();
   },
+  computed: {
+    cal() {
+      return this.ready ? this.$refs.calendar : null;
+    },
+    nowY() {
+      return this.cal ? this.cal.timeToY(this.cal.times.now) + "px" : "-10px";
+    },
+  },
   methods: {
-    startDrag({ event, timed }) {
-      if (event && timed) {
-        this.dragEvent = event;
-        this.dragTime = null;
-        this.extendOriginal = null;
-      }
-    },
-    startTime(tms) {
-      const mouse = this.toTime(tms);
-
-      if (this.dragEvent && this.dragTime === null) {
-        const start = this.dragEvent.start;
-
-        this.dragTime = mouse - start;
-      } /*  else {//CREAR EVENTO
-        this.createStart = this.roundTime(mouse);
-        this.createEvent = {
-          name: `Event #${this.events.length}`,
-          color: this.rndElement(this.colors),
-          start: this.createStart,
-          end: this.createStart,
-          timed: true,
-        };
-
-        this.events.push(this.createEvent);
-      } */
-    },
-    extendBottom(event) {
-      this.createEvent = event;
-      this.createStart = event.start;
-      this.extendOriginal = event.end;
-    },
-    mouseMove(tms) {
-      const mouse = this.toTime(tms);
-
-      if (this.dragEvent && this.dragTime !== null) {
-        const start = this.dragEvent.start;
-        const end = this.dragEvent.end;
-        const duration = end - start;
-        const newStartTime = mouse - this.dragTime;
-        const newStart = this.roundTime(newStartTime);
-        const newEnd = newStart + duration;
-
-        this.dragEvent.start = newStart;
-        this.dragEvent.end = newEnd;
-      } else if (this.createEvent && this.createStart !== null) {
-        const mouseRounded = this.roundTime(mouse, false);
-        const min = Math.min(mouseRounded, this.createStart);
-        const max = Math.max(mouseRounded, this.createStart);
-
-        this.createEvent.start = min;
-        this.createEvent.end = max;
-      }
-    },
-    endDrag() {
-      this.dragTime = null;
-      this.dragEvent = null;
-      this.createEvent = null;
-      this.createStart = null;
-      this.extendOriginal = null;
-    },
-    cancelDrag() {
-      if (this.createEvent) {
-        if (this.extendOriginal) {
-          this.createEvent.end = this.extendOriginal;
-        } else {
-          const i = this.events.indexOf(this.createEvent);
-          if (i !== -1) {
-            this.events.splice(i, 1);
-          }
-        }
-      }
-
-      this.createEvent = null;
-      this.createStart = null;
-      this.dragTime = null;
-      this.dragEvent = null;
-    },
-    roundTime(time, down = true) {
-      const roundTo = 15; // minutes
-      const roundDownTime = roundTo * 60 * 1000;
-
-      return down
-        ? time - (time % roundDownTime)
-        : time + (roundDownTime - (time % roundDownTime));
+    saveEvent() {
+      this.createEvent = {
+        name: "",
+        start: this.timeStart,
+        date: this.date,
+        end: this.timeEnd,
+        state: "",
+        color: this.rndElement(this.colors),
+        timed: true,
+      };
+      console.log(this.createEvent);
+      this.events.push(this.createEvent);
+      this.dialog = false;
     },
     toTime(tms) {
       return new Date(
@@ -218,34 +302,7 @@ export default {
         ? `rgba(${r}, ${g}, ${b}, 0.7)`
         : event.color;
     },
-    getEvents({ start, end }) {
-      const events = [];
 
-      const min = new Date(`${start.date}T00:00:00`).getTime();
-      const max = new Date(`${end.date}T23:59:59`).getTime();
-      const days = (max - min) / 86400000;
-      const eventCount = this.rnd(days, days + 20);
-
-      for (let i = 0; i < eventCount; i++) {
-        const timed = this.rnd(0, 3) !== 0;
-        const firstTimestamp = this.rnd(min, max);
-        const secondTimestamp = this.rnd(2, timed ? 8 : 288) * 900000;
-        const start = firstTimestamp - (firstTimestamp % 900000);
-        const end = start + secondTimestamp;
-        const state = false;
-
-        events.push({
-          name: this.rndElement(this.names),
-          color: this.rndElement(this.colors),
-          start,
-          end,
-          timed,
-          state,
-        });
-      }
-
-      this.events = events;
-    },
     rnd(a, b) {
       return Math.floor((b - a + 1) * Math.random()) + a;
     },
@@ -295,6 +352,25 @@ export default {
 
   &:hover::after {
     display: block;
+  }
+}
+.v-current-time {
+  height: 2px;
+  background-color: #ea4335;
+  position: absolute;
+  left: -1px;
+  right: 0;
+  pointer-events: none;
+
+  &.first::before {
+    content: "";
+    position: absolute;
+    background-color: #ea4335;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-top: -5px;
+    margin-left: -6.5px;
   }
 }
 </style>
