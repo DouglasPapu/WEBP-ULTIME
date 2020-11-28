@@ -21,10 +21,10 @@
               color="primary"
               type="week"
               class="my-event.with-time"
-              :hide-date="true"
+              hide-date="true"
+              start="2020-11-23"
+              end="2020-11-29"
               :short-weekdays="false"
-              :show-weekday="true"
-              :category-show-all="true"
             ></v-calendar>
           </v-sheet>
         </v-col>
@@ -65,6 +65,7 @@
                     label="Nombre de la materia"
                     required
                     prepend-icon="mdi-ballot-outline"
+                    v-model="subject.sub_name"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6">
@@ -80,6 +81,7 @@
                       'Domingo',
                     ]"
                     label="Día de la semana"
+                    v-model="subject.sub_day"
                     required
                   ></v-select>
                 </v-col>
@@ -88,11 +90,11 @@
                 <!--Hora de inicio-->
                 <v-col cols="12" sm="6">
                   <v-menu
-                    ref="menu"
+                    ref="menu2"
                     v-model="menu2"
                     :close-on-content-click="false"
                     :nudge-right="40"
-                    :return-value.sync="time"
+                    :return-value.sync="subject.start_time"
                     transition="scale-transition"
                     offset-y
                     max-width="290px"
@@ -100,7 +102,7 @@
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
-                        v-model="time"
+                        v-model="subject.start_time"
                         label="Hora de inicio"
                         prepend-icon="mdi-clock-time-four-outline"
                         readonly
@@ -110,20 +112,20 @@
                     </template>
                     <v-time-picker
                       v-if="menu2"
-                      v-model="time"
+                      v-model="subject.start_time"
                       full-width
-                      @click:minute="$refs.menu.save(time)"
+                      @click:minute="$refs.menu2.save(subject.start_time)"
                     ></v-time-picker>
                   </v-menu>
                 </v-col>
                 <!--Hora final-->
                 <v-col cols="12" sm="6">
                   <v-menu
-                    ref="menu"
+                    ref="menu3"
                     v-model="menu3"
                     :close-on-content-click="false"
                     :nudge-right="40"
-                    :return-value.sync="time3"
+                    :return-value.sync="subject.end_time"
                     transition="scale-transition"
                     offset-y
                     max-width="290px"
@@ -131,8 +133,8 @@
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
-                        v-model="time3"
-                        label="Hora de inicio"
+                        v-model="subject.end_time"
+                        label="Hora de finalización"
                         prepend-icon="mdi-clock-time-four-outline"
                         readonly
                         v-bind="attrs"
@@ -141,9 +143,9 @@
                     </template>
                     <v-time-picker
                       v-if="menu3"
-                      v-model="time3"
+                      v-model="subject.end_time"
                       full-width
-                      @click:minute="$refs.menu.save(time3)"
+                      @click:minute="$refs.menu3.save(subject.end_time)"
                     ></v-time-picker>
                   </v-menu>
                 </v-col>
@@ -155,32 +157,35 @@
             <v-btn color="blue darken-1" text @click="dialog = false">
               Cancelar
             </v-btn>
-            <v-btn color="blue darken-1" text @click="dialog = false">
+            <v-btn color="blue darken-1" text @click="addSubjectToSchedule">
               Añadir
             </v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
     </v-row>
+    <Alert></Alert>
   </v-container>
 </template>
 <script>
-//import moment from "moment";
-
+import Alert from "./Alert";
 export default {
+  components: {
+    Alert,
+  },
   data: () => ({
-    today: "2020-11-25",
+    today: "2020-11-23",
+    subject: {
+      sub_name: "",
+      start_time: null,
+      end_time: null,
+      sub_day: "",
+      fk_user: 0,
+    },
     loading: false,
     dialog: false,
-    notifications: false,
-    sound: true,
-    time: null,
     menu2: false,
-    modal2: false,
-    time3: null,
     menu3: false,
-    modal3: false,
-    widgets: false,
     events: [
       {
         name: "Creatividad empresarial",
@@ -188,15 +193,20 @@ export default {
         end: "2020-11-25 10:00",
       },
     ],
-    subject: {},
   }),
   mounted() {
     this.$refs.calendar.scrollToTime("7:00");
   },
+  methods: {
+    addSubjectToSchedule() {
+      this.$store.dispatch("addSubjectToSchedule", this.subject);
+      this.dialog = false;
+    },
+  },
 };
 </script>
 
-<style scoped>
+<style>
 .my-event {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -224,5 +234,16 @@ export default {
 }
 .psub {
   margin-top: 20px;
+}
+.theme--light.v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
+  display: none;
+}
+.theme--light.v-calendar-daily
+  .v-calendar-daily_head-day.v-past
+  .v-calendar-daily_head-weekday,
+.theme--light.v-calendar-daily
+  .v-calendar-daily_head-day.v-past
+  .v-calendar-daily_head-day-label {
+  color: black;
 }
 </style>
