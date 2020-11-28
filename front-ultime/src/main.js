@@ -7,6 +7,7 @@ import Planner from "./components/Planner";
 import Schedule from "./components/Schedule";
 import Home from "./components/Home";
 import Main from "./components/Main";
+import Grade from "./components/Grade";
 
 const routes = [
   {
@@ -24,6 +25,10 @@ const routes = [
   {
     path: "/main",
     component: Main,
+  },
+  {
+    path: "/grades",
+    component: Grade,
   },
 ];
 
