@@ -53,6 +53,8 @@ exports.create = async (req, res, next) => {
       ]);
       res.status(200).send("Subject created");
     } else {
+      var isValidToAdd = false;
+      var stillIterable = true;
       validate2.rows.forEach((element) => {
         currentTime = moment(subject.start_time, "HH:mm");
         currentFinal = moment(subject.end_time, "HH:mm");
@@ -61,8 +63,10 @@ exports.create = async (req, res, next) => {
         if (
           (currentTime.isBetween(startTime, endTime) ||
             currentFinal.isBetween(startTime, endTime)) &&
-          subject.sub_day == element.sub_day
+          subject.sub_day === element.sub_day &&
+          stillIterable
         ) {
+          stillIterable = false;
           res.status(406).send({ message: "This field is busy" });
         } else {
           if (
@@ -72,36 +76,32 @@ exports.create = async (req, res, next) => {
               element.start_time,
               element.end_time
             ) &&
-            subject.sub_day == element.sub_day
+            subject.sub_day === element.sub_day &&
+            stillIterable
           ) {
+            stillIterable = false;
             res.status(406).send({ message: "Exist some field which is busy" });
           } else {
-            var sqlFinal =
-              'INSERT INTO public."Subject" (fk_schedule,sub_name, start_time,end_time,sub_day) VALUES ($1, $2, $3, $4, $5)';
-            db.query(sqlFinal, [
-              subject.fk_schedule,
-              subject.sub_name,
-              subject.start_time,
-              subject.end_time,
-              subject.sub_day,
-            ]);
-            res.status(200).send("Subject created");
+            isValidToAdd = true;
           }
         }
       });
+      if (isValidToAdd && stillIterable) {
+        var sqlFinal =
+          'INSERT INTO public."Subject" (fk_schedule,sub_name, start_time,end_time,sub_day) VALUES ($1, $2, $3, $4, $5)';
+        await db.query(sqlFinal, [
+          subject.fk_schedule,
+          subject.sub_name,
+          subject.start_time,
+          subject.end_time,
+          subject.sub_day,
+        ]);
+        res.status(200).send("Subject created");
+      }
     }
   } else {
     res.status(406).send({ message: "The user doesn't exist" });
   }
-
-  //console.log(validate.rows[0].pk_schedule);
-  /*   await db.query(sql, [
-    subject.fk_schedule,
-    subject.sub_name,
-    subject.start_time,
-    subject.end_time,
-    subject.sub_day,
-  ]); */
 };
 
 exports.get = async (req, res, next) => {

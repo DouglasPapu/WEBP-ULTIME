@@ -14,7 +14,7 @@ export default new Vuex.Store({
   },
   mutations: {
     addSubjectToSchedule(state, payload) {
-      payload.fk_user = 1;
+      payload.fk_user = 2;
       axios
         .post("http://localhost:3000/api/subjects/create-subject", payload)
         .then((res) => {
