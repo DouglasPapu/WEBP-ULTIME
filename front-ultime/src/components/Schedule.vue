@@ -164,20 +164,23 @@
         </v-card>
       </v-dialog>
     </v-row>
+    <Alert></Alert>
   </v-container>
 </template>
 <script>
-//import moment from "moment";
-
+import Alert from "./Alert";
 export default {
+  components: {
+    Alert,
+  },
   data: () => ({
-    today: new Date().toISOString().substr(0, 10),
+    today: "2020-11-23",
     subject: {
-      fk_schedule: 0,
       sub_name: "",
       start_time: null,
       end_time: null,
       sub_day: "",
+      fk_user: 0,
     },
     loading: false,
     dialog: false,

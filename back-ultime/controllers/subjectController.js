@@ -1,6 +1,22 @@
 var moment = require("moment");
 const db = require("../config/posgres");
 
+//Validation which allows know if any time is between two hours!
+//start_time is the time initial of a subject in the BD
+//end_time is the time final of the same subject
+function compareToHours(rangeTimeStart, rangeTimeFinal, start_time, end_time) {
+  fixStart = moment(start_time, "HH:mm");
+  fixFinal = moment(end_time, "HH:mm");
+  start = moment(rangeTimeStart, "HH:mm");
+  end = moment(rangeTimeFinal, "HH:mm");
+
+  if (fixStart.isBetween(start, end) || fixFinal.isBetween(start, end)) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 exports.create = async (req, res, next) => {
   var sql2 = 'SELECT pk_schedule FROM public."Schedule" WHERE fk_user = $1';
   let schedule = {
@@ -42,31 +58,40 @@ exports.create = async (req, res, next) => {
         currentFinal = moment(subject.end_time, "HH:mm");
         startTime = moment(element.start_time, "HH:mm");
         endTime = moment(element.end_time, "HH:mm");
-
-        console.log(currentTime.isBetween(startTime, endTime));
-        console.log(currentFinal.isBetween(startTime, endTime));
         if (
           (currentTime.isBetween(startTime, endTime) ||
             currentFinal.isBetween(startTime, endTime)) &&
           subject.sub_day == element.sub_day
         ) {
-          res.status(406).send("This field is busy");
+          res.status(406).send({ message: "This field is busy" });
         } else {
-          var sqlFinal =
-            'INSERT INTO public."Subject" (fk_schedule,sub_name, start_time,end_time,sub_day) VALUES ($1, $2, $3, $4, $5)';
-          db.query(sqlFinal, [
-            subject.fk_schedule,
-            subject.sub_name,
-            subject.start_time,
-            subject.end_time,
-            subject.sub_day,
-          ]);
-          res.status(200).send("Subject created");
+          if (
+            compareToHours(
+              subject.start_time,
+              subject.end_time,
+              element.start_time,
+              element.end_time
+            ) &&
+            subject.sub_day == element.sub_day
+          ) {
+            res.status(406).send({ message: "Exist some field which is busy" });
+          } else {
+            var sqlFinal =
+              'INSERT INTO public."Subject" (fk_schedule,sub_name, start_time,end_time,sub_day) VALUES ($1, $2, $3, $4, $5)';
+            db.query(sqlFinal, [
+              subject.fk_schedule,
+              subject.sub_name,
+              subject.start_time,
+              subject.end_time,
+              subject.sub_day,
+            ]);
+            res.status(200).send("Subject created");
+          }
         }
       });
     }
   } else {
-    res.status(406).send("The user doesn't exist");
+    res.status(406).send({ message: "The user doesn't exist" });
   }
 
   //console.log(validate.rows[0].pk_schedule);
