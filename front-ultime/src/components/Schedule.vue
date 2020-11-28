@@ -15,7 +15,7 @@
           <v-sheet height="400">
             <v-calendar
               ref="calendar"
-              :events="events"
+              :events="subjects"
               :weekdays="[1, 2, 3, 4, 5, 6, 0]"
               locale="es"
               color="primary"
@@ -71,15 +71,9 @@
                 <v-col cols="12" sm="6">
                   <v-select
                     prepend-icon="mdi-calendar-cursor"
-                    :items="[
-                      'Lunes',
-                      'Martes',
-                      'Miércoles',
-                      'Jueves',
-                      'Viernes',
-                      'Sábado',
-                      'Domingo',
-                    ]"
+                    :items="daysweek"
+                    item-text="day"
+                    item-value="number"
                     label="Día de la semana"
                     v-model="subject.sub_day"
                     required
@@ -174,7 +168,36 @@ export default {
     Alert,
   },
   data: () => ({
-    today: "2020-11-23",
+    daysweek: [
+      {
+        number: 23,
+        day: "Lunes",
+      },
+      {
+        number: 24,
+        day: "Martes",
+      },
+      {
+        number: 25,
+        day: "Miércoles",
+      },
+      {
+        number: 26,
+        day: "Jueves",
+      },
+      {
+        number: 27,
+        day: "Viernes",
+      },
+      {
+        number: 28,
+        day: "Sábado",
+      },
+      {
+        number: 29,
+        day: "Domingo",
+      },
+    ],
     subject: {
       sub_name: "",
       start_time: null,
@@ -196,11 +219,17 @@ export default {
   }),
   mounted() {
     this.$refs.calendar.scrollToTime("7:00");
+    this.$store.dispatch("getSubjects");
   },
   methods: {
     addSubjectToSchedule() {
       this.$store.dispatch("addSubjectToSchedule", this.subject);
       this.dialog = false;
+    },
+  },
+  computed: {
+    subjects() {
+      return this.$store.state.subjects;
     },
   },
 };

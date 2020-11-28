@@ -105,5 +105,22 @@ exports.create = async (req, res, next) => {
 };
 
 exports.get = async (req, res, next) => {
-  var sql = 'SELECT * FROM public."Subject"';
+  var sql2 = 'SELECT pk_schedule FROM public."Schedule" WHERE fk_user = $1';
+
+  let schedule = {
+    fk_user: req.query.fk_user,
+  };
+
+  var validate = await db.query(sql2, [schedule.fk_user]);
+  // Validation to get the schedule of the current user.
+  if (validate.rowCount !== 0) {
+    var sql3 = 'SELECT * FROM public."Subject" WHERE fk_schedule = $1';
+    let subject2 = {
+      fk_schedule: validate.rows[0].pk_schedule,
+    };
+    var validate2 = await db.query(sql3, [subject2.fk_schedule]);
+    res.send(validate2.rows);
+  } else {
+    res.status(406).send({ message: "The user doesn't exist" });
+  }
 };
