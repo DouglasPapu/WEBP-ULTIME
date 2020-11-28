@@ -7,8 +7,8 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     message: "",
-    activeAlert: false,
     typeMessage: "success",
+    iconMessage: "",
     subjects: [],
     tasks: [],
   },
@@ -56,7 +56,6 @@ export default new Vuex.Store({
               end: payload.sub_day + " " + payload.end_time,
             };
             state.subjects.push(objNew);
-            state.activeAlert = true;
             state.typeMessage = "success";
             state.message = "Se ha agregado la materia con éxito.";
           }
@@ -87,7 +86,6 @@ export default new Vuex.Store({
               message1 = "No se pudo crear la materia. Intentalo de nuevo";
             }
           }
-          state.activeAlert = true;
           state.typeMessage = "error";
           state.message = message1;
         });
@@ -108,18 +106,27 @@ export default new Vuex.Store({
       }
     },
     deleteSubject(state, payload) {
+      console.log(state.subjects);
+      console.log(payload);
       axios
         .delete("http://localhost:3000/api/subjects/", {
           params: { fk_user: 2, id: payload.id },
         })
         .then((res) => {
           if (res.status === 200) {
-            state.subjects.splice(payload, 1);
+            state.subjects.forEach((element, index) => {
+              if (element.id == payload.id) {
+                state.subjects.splice(index, 1);
+              }
+            });
             state.activeAlert = true;
             state.typeMessage = "success";
             state.message = "Se ha borrado la materia con éxito.";
           }
         });
+    },
+    refreshAlert(state) {
+      state.message = "";
     },
   },
   actions: {
@@ -133,6 +140,9 @@ export default new Vuex.Store({
           commit("SET_SUBJECTS", res.data);
         });
     },
+    refreshAlert({ commit }) {
+      commit("refreshAlert");
+    },
     deleteSubject({ commit }, payload) {
       commit("deleteSubject", payload);
     },
@@ -140,9 +150,6 @@ export default new Vuex.Store({
   getters: {
     getMessage: (state) => {
       return state.message;
-    },
-    getActiveAlert: (state) => {
-      return state.activeAlert;
     },
     getTypeMessage: (state) => {
       return state.typeMessage;

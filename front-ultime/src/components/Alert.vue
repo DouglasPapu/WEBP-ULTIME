@@ -1,6 +1,11 @@
 <template>
-  <v-snackbar v-model="getActiveAlert" :timeout="3000">
-    <v-alert :type="getTypeMessage">{{ getMessage }}</v-alert>
+  <v-snackbar :value="getMessage !== ''" :color="getTypeMessage" :timeout="-1">
+    <template v-slot:action="{ attrs }">
+      <v-btn color="white" text v-bind="attrs" @click="refreshAlert">
+        Cerrar
+      </v-btn>
+    </template>
+    {{ getMessage }}
   </v-snackbar>
 </template>
 
@@ -9,7 +14,12 @@ import Vuex from "vuex";
 export default {
   data: () => ({}),
   computed: {
-    ...Vuex.mapGetters(["getMessage", "getActiveAlert", "getTypeMessage"]),
+    ...Vuex.mapGetters(["getMessage", "getTypeMessage"]),
+  },
+  methods: {
+    refreshAlert() {
+      this.$store.dispatch("refreshAlert");
+    },
   },
 };
 </script>

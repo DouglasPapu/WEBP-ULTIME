@@ -42,17 +42,25 @@ exports.create = async (req, res, next) => {
       sub_day: req.body.sub_day,
     };
     if (validate2.rowCount === 0) {
-      var sql =
-        'INSERT INTO public."Subject" (fk_schedule,sub_name, start_time,end_time,sub_day) VALUES ($1, $2, $3, $4, $5) RETURNING pk_subject';
-      var obj2 = await db.query(sql, [
-        subject.fk_schedule,
-        subject.sub_name,
-        subject.start_time,
-        subject.end_time,
-        subject.sub_day,
-      ]);
-      var id = obj2.rows[0].pk_subject;
-      res.status(200).send({ params: { id } });
+      devInit = moment(subject.start_time, "HH:mm");
+      devFin = moment(subject.end_time, "HH:mm");
+      if (devFin.isBefore(devInit)) {
+        res.status(406).send({
+          message: "The time final should be greater than time initial",
+        });
+      } else {
+        var sql =
+          'INSERT INTO public."Subject" (fk_schedule,sub_name, start_time,end_time,sub_day) VALUES ($1, $2, $3, $4, $5) RETURNING pk_subject';
+        var obj2 = await db.query(sql, [
+          subject.fk_schedule,
+          subject.sub_name,
+          subject.start_time,
+          subject.end_time,
+          subject.sub_day,
+        ]);
+        var id = obj2.rows[0].pk_subject;
+        res.status(200).send({ params: { id } });
+      }
     } else {
       devInitial = moment(subject.start_time, "HH:mm");
       devFinal = moment(subject.end_time, "HH:mm");
