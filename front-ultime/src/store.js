@@ -8,7 +8,7 @@ export default new Vuex.Store({
   state: {
     message: "",
     activeAlert: false,
-    typeMessage: "",
+    typeMessage: "success",
     subjects: [],
     tasks: [],
   },
@@ -50,6 +50,7 @@ export default new Vuex.Store({
         .then((res) => {
           if (res.status === 200) {
             var objNew = {
+              id: res.data.params.id,
               name: payload.sub_name,
               start: payload.sub_day + " " + payload.start_time,
               end: payload.sub_day + " " + payload.end_time,
@@ -77,6 +78,11 @@ export default new Vuex.Store({
               message1 = "Error: El usuario no existe. Por favor regístrate";
               break;
             }
+            case "The time final should be greater than time initial": {
+              message1 =
+                "Error:  La hora final debe ser mayor que la hora inicial";
+              break;
+            }
             default: {
               message1 = "No se pudo crear la materia. Intentalo de nuevo";
             }
@@ -91,6 +97,7 @@ export default new Vuex.Store({
       if (payload.lenght !== 0) {
         payload.forEach((element) => {
           var objNew = {
+            id: element.pk_subject,
             name: element.sub_name,
             start: element.sub_day + " " + element.start_time,
             end: element.sub_day + " " + element.end_time,
@@ -99,6 +106,20 @@ export default new Vuex.Store({
         });
         state.subjects = replaceSub;
       }
+    },
+    deleteSubject(state, payload) {
+      axios
+        .delete("http://localhost:3000/api/subjects/", {
+          params: { fk_user: 2, id: payload.id },
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            state.subjects.splice(payload, 1);
+            state.activeAlert = true;
+            state.typeMessage = "success";
+            state.message = "Se ha borrado la materia con éxito.";
+          }
+        });
     },
   },
   actions: {
@@ -111,6 +132,9 @@ export default new Vuex.Store({
         .then((res) => {
           commit("SET_SUBJECTS", res.data);
         });
+    },
+    deleteSubject({ commit }, payload) {
+      commit("deleteSubject", payload);
     },
   },
   getters: {

@@ -25,7 +25,42 @@
               start="2020-11-23"
               end="2020-11-29"
               :short-weekdays="false"
+              @click:event="showEvent"
             ></v-calendar>
+            <v-menu
+              v-model="selectedOpen"
+              :close-on-content-click="false"
+              :activator="selectedElement"
+              offset-x
+            >
+              <v-card color="grey lighten-4" min-width="350px" flat>
+                <v-toolbar color="primary" dark>
+                  <v-btn icon @click="deleteSubject">
+                    <v-icon>mdi-delete</v-icon>
+                  </v-btn>
+                  <v-toolbar-title
+                    v-html="selectedEvent.name"
+                  ></v-toolbar-title>
+                  <v-spacer></v-spacer>
+                </v-toolbar>
+                <v-card-text>
+                  <span
+                    >Hora de inicio:<br />
+                    {{ selectedEvent.start }}</span
+                  >
+                  <v-spacer></v-spacer>
+                  <span
+                    >Hora de finalización: <br />
+                    {{ selectedEvent.end }}</span
+                  >
+                </v-card-text>
+                <v-card-actions>
+                  <v-btn text color="secondary" @click="selectedOpen = false">
+                    CERRAR
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-menu>
           </v-sheet>
         </v-col>
       </v-row>
@@ -205,26 +240,42 @@ export default {
       sub_day: "",
       fk_user: 0,
     },
+    selectedElement: null,
+    selectedOpen: false,
+    selectedEvent: {},
     loading: false,
     dialog: false,
     menu2: false,
     menu3: false,
-    events: [
-      {
-        name: "Creatividad empresarial",
-        start: "2020-11-25 09:00",
-        end: "2020-11-25 10:00",
-      },
-    ],
   }),
   mounted() {
-    this.$refs.calendar.scrollToTime("7:00");
+    this.$refs.calendar.scrollToTime("6:00");
     this.$store.dispatch("getSubjects");
   },
   methods: {
     addSubjectToSchedule() {
       this.$store.dispatch("addSubjectToSchedule", this.subject);
       this.dialog = false;
+    },
+    deleteSubject() {
+      this.$store.dispatch("deleteSubject", this.selectedEvent);
+      this.selectedOpen = false;
+    },
+    showEvent({ nativeEvent, event }) {
+      const open = () => {
+        this.selectedEvent = event;
+        this.selectedElement = nativeEvent.target;
+        setTimeout(() => (this.selectedOpen = true), 10);
+      };
+
+      if (this.selectedOpen) {
+        this.selectedOpen = false;
+        setTimeout(open, 10);
+      } else {
+        open();
+      }
+
+      nativeEvent.stopPropagation();
     },
   },
   computed: {
