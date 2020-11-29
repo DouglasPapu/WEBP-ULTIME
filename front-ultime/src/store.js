@@ -10,16 +10,17 @@ export default new Vuex.Store({
     typeMessage: "success",
     iconMessage: "",
     subjects: [],
+    grades: [],
     tasks: [],
-    userlog:{
-      id:"",
-      username:"",
-      passwd:"",
-      lastname:"",
-      firstname:""
+    userlog: {
+      id: "",
+      username: "",
+      passwd: "",
+      lastname: "",
+      firstname: "",
     },
-    messagelog:"",
-    messageRegis:"",
+    messagelog: "",
+    messageRegis: "",
     loading: false,
   },
   mutations: {
@@ -100,72 +101,62 @@ export default new Vuex.Store({
           state.message = message1;
         });
     },
-    logUser(state, payload){
+    logUser(state, payload) {
       axios
-      .post("http://localhost:3000/users/login", payload)
-      .then((res)=>{
-        
-       if(res.status===200){
-                 
-         state.userlog.username =res.data[0].username;
-         state.userlog.id = res.data[0].pk_user;
-         state.userlog.firstname = res.data[0].firstname;
-         state.userlog.passwd = res.data[0].passwd;
-         state.userlog.lastname = res.data[0].lastname;
-         state.messagelog = "";
-         console.log(res.data[0])
-       }
-
-      })
-      .catch((error)=>{
-       
-        let message1 = "";        
-        switch (error.response.data.message) {
-          case "The users no exists": {            
-            message1 ="Error: el usuario no existe.";
-            break;
+        .post("http://localhost:3000/users/login", payload)
+        .then((res) => {
+          if (res.status === 200) {
+            state.userlog.username = res.data[0].username;
+            state.userlog.id = res.data[0].pk_user;
+            state.userlog.firstname = res.data[0].firstname;
+            state.userlog.passwd = res.data[0].passwd;
+            state.userlog.lastname = res.data[0].lastname;
+            state.messagelog = "";
+            console.log(res.data[0]);
           }
-          case "The username is incorrect": {
-            message1 ="Error: el nombre de usuario es incorrecto.";
-            break;
+        })
+        .catch((error) => {
+          let message1 = "";
+          switch (error.response.data.message) {
+            case "The users no exists": {
+              message1 = "Error: el usuario no existe.";
+              break;
+            }
+            case "The username is incorrect": {
+              message1 = "Error: el nombre de usuario es incorrecto.";
+              break;
+            }
+            case "The password is wrong": {
+              message1 = "Error: La contraseña es incorrecta.";
+              break;
+            }
+            default: {
+              message1 = "No se pudo inciar sesion. Intentalo de nuevo";
+            }
           }
-          case "The password is wrong": {
-            message1 ="Error: La contraseña es incorrecta.";
-            break;
-          }
-          default: {
-            message1 = "No se pudo inciar sesion. Intentalo de nuevo";
-          }
-        }
-        state.messagelog = message1; 
-        console.log("AERROR",state.messagelog )
-            
-      })
-
+          state.messagelog = message1;
+          console.log("AERROR", state.messagelog);
+        });
     },
-    registerUser(state,payload){
+    registerUser(state, payload) {
       axios
-      .post("http://localhost:3000/users/create", payload)
-      .then((res)=>{
-       if(res.status===200){   
-         
-        state.messageRegis = "Registro con éxito"
-       }
-      })
-      .catch((error)=>{       
-        let message1 = "";        
-        switch (error.response.data.message) {
-          case "The username already exists": {            
-            message1 ="Error: el nombre de usuario ya existe.";
-            break;
+        .post("http://localhost:3000/users/create", payload)
+        .then((res) => {
+          if (res.status === 200) {
+            state.messageRegis = "Registro con éxito";
           }
-        }
-        state.messageRegis = message1; 
-        
-            
-      })
+        })
+        .catch((error) => {
+          let message1 = "";
+          switch (error.response.data.message) {
+            case "The username already exists": {
+              message1 = "Error: el nombre de usuario ya existe.";
+              break;
+            }
+          }
+          state.messageRegis = message1;
+        });
     },
-
 
     SET_SUBJECTS(state, payload) {
       var replaceSub = [];
@@ -211,12 +202,11 @@ export default new Vuex.Store({
     addSubjectToSchedule({ commit }, payload) {
       commit("addSubjectToSchedule", payload);
     },
-    logUser({commit}, payload){
-    
+    logUser({ commit }, payload) {
       commit("logUser", payload);
     },
-    registerUser({commit},payload){
-      commit("registerUser",payload)
+    registerUser({ commit }, payload) {
+      commit("registerUser", payload);
     },
     getSubjects({ commit }) {
       this.state.loading = true;
@@ -242,14 +232,14 @@ export default new Vuex.Store({
     getTypeMessage: (state) => {
       return state.typeMessage;
     },
-    getUserLoged:(state)=>{
+    getUserLoged: (state) => {
       return state.userlog;
     },
-    getMessageLog:(state)=>{
+    getMessageLog: (state) => {
       return state.messagelog;
     },
-    getMessageReg:(state)=>{
+    getMessageReg: (state) => {
       return state.messageRegis;
-    }
+    },
   },
 });
