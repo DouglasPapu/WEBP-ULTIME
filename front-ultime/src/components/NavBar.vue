@@ -6,7 +6,7 @@
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn color="primary" text>Sobre nosotros</v-btn>
-      <v-btn color="primary" text>Contactanos</v-btn>
+      <v-btn color="primary" text>Contáctanos</v-btn>
     </v-app-bar>
   </div>
 </template>

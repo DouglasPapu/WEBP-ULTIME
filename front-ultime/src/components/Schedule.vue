@@ -35,7 +35,7 @@
             >
               <v-card color="grey lighten-4" min-width="350px" flat>
                 <v-toolbar color="primary" dark>
-                  <v-btn icon @click="deleteSubject">
+                  <v-btn icon @click="dialogDelete = true">
                     <v-icon>mdi-delete</v-icon>
                   </v-btn>
                   <v-toolbar-title
@@ -203,6 +203,31 @@
           </v-card>
         </v-form>
       </v-dialog>
+      <!-- Dialog warning to delete an subject -->
+      <v-dialog v-model="dialogDelete" max-width="530">
+        <v-card>
+          <v-card-title class="headline">
+            ¿Estás seguro que deseas borrar la materia?
+          </v-card-title>
+
+          <v-card-text>
+            Recuerda que una vez eliminada perderás todas las notas almacenadas
+            que tenias para esta materia.
+          </v-card-text>
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
+
+            <v-btn color="green darken-1" text @click="dialogDelete = false">
+              Cancelar
+            </v-btn>
+
+            <v-btn color="green darken-1" text @click="deleteSubject">
+              Eliminar
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-row>
     <Alert></Alert>
   </v-container>
@@ -258,6 +283,7 @@ export default {
     menu2: false,
     menu3: false,
     isValid: true,
+    dialogDelete: false,
     subjectRules: [(name) => !!name || "El nombre de la materia es requerido"],
     dayRules: [(day) => !!day || "El día es requerido"],
     startRules: [(start) => !!start || "La hora de inicio es requerida"],
@@ -275,6 +301,7 @@ export default {
     deleteSubject() {
       this.$store.dispatch("deleteSubject", this.selectedEvent);
       this.selectedOpen = false;
+      this.dialogDelete = false;
     },
     showEvent({ nativeEvent, event }) {
       const open = () => {

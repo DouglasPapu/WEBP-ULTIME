@@ -166,14 +166,31 @@ exports.delete = async (req, res, next) => {
   var validate = await db.query(sql2, [schedule.fk_user]);
   // Validation to get the schedule of the current user.
   if (validate.rowCount !== 0) {
-    var sql3 =
-      'DELETE FROM public."Subject" WHERE fk_schedule = $1 AND pk_subject = $2';
-    let subject2 = {
-      fk_schedule: validate.rows[0].pk_schedule,
-      pk_subject: req.query.id,
-    };
-    await db.query(sql3, [subject2.fk_schedule, subject2.pk_subject]);
-    res.status(200).send("Subject successful removed");
+    var sql5 = 'SELECT * FROM public."Grade" WHERE fk_subject = $1';
+
+    var valid = await db.query(sql5, [req.query.id]);
+
+    if (valid.rowCount === 0) {
+      var sql3 =
+        'DELETE FROM public."Subject" WHERE fk_schedule = $1 AND pk_subject = $2';
+      let subject2 = {
+        fk_schedule: validate.rows[0].pk_schedule,
+        pk_subject: req.query.id,
+      };
+      await db.query(sql3, [subject2.fk_schedule, subject2.pk_subject]);
+      res.status(200).send("Subject successful removed");
+    } else {
+      var sql4 = 'DELETE FROM public."Grade" WHERE fk_subject = $1';
+      await db.query(sql4, [req.query.id]);
+      var sql6 =
+        'DELETE FROM public."Subject" WHERE fk_schedule = $1 AND pk_subject = $2';
+      let subject7 = {
+        fk_schedule: validate.rows[0].pk_schedule,
+        pk_subject: req.query.id,
+      };
+      await db.query(sql6, [subject7.fk_schedule, subject7.pk_subject]);
+      res.status(200).send("Subject successful removed");
+    }
   } else {
     res.status(406).send({ message: "The user doesn't exist" });
   }
