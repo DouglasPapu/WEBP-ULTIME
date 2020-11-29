@@ -12,7 +12,7 @@
           <v-list-item-title class="title">
             {{getFirstname}} {{getLastname}}
           </v-list-item-title>
-          <v-list-item-subtitle align="center">username: {{getUsername}}</v-list-item-subtitle>
+          <v-list-item-subtitle align="center">Nombre de usuario: {{getUsername}}</v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
     </v-list>

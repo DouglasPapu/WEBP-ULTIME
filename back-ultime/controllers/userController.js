@@ -29,6 +29,10 @@ exports.create =  async (req, res, next) =>{
       
       await db.query(planner, [plannerUser.rows[0].pk_user, 'initPlanner']);
 
+      
+      var schedule= 'INSERT INTO public."Schedule" (fk_user,semester) VALUES ($1, $2)';
+      await db.query(schedule, [plannerUser.rows[0].pk_user, 'semester']);
+
       res.status(200).send({message:'User created'});
     }else{
       res.status(406).send({message:'The username already exists'})
