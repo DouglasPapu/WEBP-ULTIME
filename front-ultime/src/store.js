@@ -13,7 +13,7 @@ export default new Vuex.Store({
     grades: [],
     tasks: [],
     userlog: {
-      id: "",
+      id: null,
       username: "",
       passwd: "",
       lastname: "",
@@ -25,7 +25,8 @@ export default new Vuex.Store({
   },
   mutations: {
     addSubjectToSchedule(state, payload) {
-      payload.fk_user = 2;
+      payload.fk_user = state.userlog.id;
+      console.log(payload);
       switch (payload.sub_day) {
         case 23: {
           payload.sub_day = "2020-11-23";
@@ -75,22 +76,20 @@ export default new Vuex.Store({
           let message1 = "";
           switch (error.response.data.message) {
             case "This field is busy": {
-              message1 =
-                "Error: Ya existe una materia en este rango de tiempo.";
+              message1 = "Ya existe una materia en este rango de tiempo.";
               break;
             }
             case "Exist some field which is busy": {
               message1 =
-                "Error: El tiempo de rango escogido para esta materia ya está ocupado.";
+                "El tiempo de rango escogido para esta materia ya está ocupado.";
               break;
             }
             case "The user doesn't exist": {
-              message1 = "Error: El usuario no existe. Por favor regístrate";
+              message1 = "El usuario no existe. Por favor regístrate";
               break;
             }
             case "The time final should be greater than time initial": {
-              message1 =
-                "Error:  La hora final debe ser mayor que la hora inicial";
+              message1 = "La hora final debe ser mayor que la hora inicial";
               break;
             }
             default: {
@@ -175,11 +174,9 @@ export default new Vuex.Store({
       }
     },
     deleteSubject(state, payload) {
-      console.log(state.subjects);
-      console.log(payload);
       axios
         .delete("http://localhost:3000/api/subjects/", {
-          params: { fk_user: 2, id: payload.id },
+          params: { fk_user: state.userlog.id, id: payload.id },
         })
         .then((res) => {
           if (res.status === 200) {
@@ -192,10 +189,26 @@ export default new Vuex.Store({
             state.typeMessage = "success";
             state.message = "Se ha borrado la materia con éxito.";
           }
+        })
+        .catch((error) => {
+          let message1 = "";
+          switch (error.response.data.message) {
+            case "The user doesn't exist": {
+              message1 = "El usuario no existe. Por favor regístrate";
+              break;
+            }
+          }
+          state.message = message1;
+          state.typeMessage = "error";
+          state.message = message1;
         });
     },
     refreshAlert(state) {
       state.message = "";
+    },
+    callAlert(state, payload) {
+      state.message = payload.message;
+      state.typeMessage = payload.typeMessage;
     },
   },
   actions: {
@@ -211,7 +224,9 @@ export default new Vuex.Store({
     getSubjects({ commit }) {
       this.state.loading = true;
       axios
-        .get("http://localhost:3000/api/subjects/", { params: { fk_user: 2 } })
+        .get("http://localhost:3000/api/subjects/", {
+          params: { fk_user: this.state.userlog.id },
+        })
         .then((res) => {
           if (res.status === 200) {
             commit("SET_SUBJECTS", res.data);
@@ -223,6 +238,9 @@ export default new Vuex.Store({
     },
     deleteSubject({ commit }, payload) {
       commit("deleteSubject", payload);
+    },
+    callAlert({ commit }, payload) {
+      commit("callAlert", payload);
     },
   },
   getters: {
