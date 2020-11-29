@@ -40,7 +40,7 @@ Vue.use(VueRouter);
 
 new Vue({
   vuetify,
-  router,
-  store,
+  router,  
   render: (h) => h(App),
+  store,
 }).$mount("#app");

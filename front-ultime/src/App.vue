@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-navigation-drawer permanent expand-on-hover app>
+    <v-navigation-drawer permanent expand-on-hover app  v-if="getFirstname">
       <Navigation></Navigation>
     </v-navigation-drawer>
     <!--     <v-app-bar color="white" app dark> -->
@@ -30,9 +30,17 @@ export default {
     Footer,
   },
 
-  data: () => ({
+  data ()  {
+    return{
+      login: false,
+    }   
     //
-  }),
+  },
+  computed:{
+    getFirstname:function(){ 
+      return this.$store.getters.getUserLoged.firstname !==""? true:false;
+    },
+  }
 };
 </script>
 <style>

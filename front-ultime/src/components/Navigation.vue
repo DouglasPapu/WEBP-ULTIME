@@ -10,9 +10,9 @@
       <v-list-item link>
         <v-list-item-content>
           <v-list-item-title class="title">
-            {{firstname}}
+            {{getFirstname}} {{getLastname}}
           </v-list-item-title>
-          <v-list-item-subtitle>juanlobio@gmail.com</v-list-item-subtitle>
+          <v-list-item-subtitle align="center">username: {{getUsername}}</v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
     </v-list>
@@ -52,8 +52,21 @@
 export default {
   data(){
     return{
+      
       firstname: this.$store.getters.getUserLoged.firstname,
     }
+  },
+  computed:{
+    getFirstname:function(){
+      return this.$store.getters.getUserLoged.firstname;
+    },
+    getLastname:function(){
+      return this.$store.getters.getUserLoged.lastname;
+    },
+      getUsername:function(){
+      return this.$store.getters.getUserLoged.username;
+    },
+    
   }
 };
 </script>

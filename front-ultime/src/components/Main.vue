@@ -40,12 +40,14 @@
                     label="Nombre"
                     required
                     v-model="user_reg.firstname"
+                    :rules="nameRules"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6" md="4">
                   <v-text-field
                     label="Apellido"
                     v-model="user_reg.lastname"
+                     :rules="nameRules"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6" md="4"> </v-col>
@@ -54,14 +56,18 @@
                     label="Nombre de usuario"
                     required
                     v-model="user_reg.username"
+                     :rules="nameRules"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12">
                   <v-text-field
-                    label="Password"
-                    type="text"
+                    label="Contraseña"                    
+                    :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'"
+              @click:append="show2 = !show2"
+              :type="show2 ? 'text' : 'password'"
                     required
                     v-model="user_reg.passwd"
+                     :rules="passwordRules"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -70,16 +76,14 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="dialogForm = false">
+            <v-btn color="blue darken-1" text @click="dialogForm = false; cleanUserLog()">
               Cancelar
             </v-btn>
             <v-btn
               color="blue darken-1"
               text
-              @click="
-                dialogForm = false;
-                register();
-              "
+              :disabled= validateReg
+              @click="register()"
             >
               Crear
             </v-btn>
@@ -109,6 +113,7 @@
             <v-text-field
               v-model="user_log.username"
               label="Nombre de usuario"
+              :rules="usernameLogRules"
               outlined
             ></v-text-field>
             <v-text-field
@@ -117,6 +122,7 @@
               :type="show1 ? 'text' : 'password'"
               v-model="user_log.passwd"
               label="Contraseña"
+              :rules="passwdLogRules"
               outlined
             ></v-text-field>
           </v-card-text>
@@ -242,12 +248,14 @@ export default {
       ],
       dialogForm: false,
       alertLog: false,
+      validateReg:false,
       messageLog: "",
       typeLog:"",
       registerDialog:false,
       typereg:"",
       messageReg:"",
       show1: false,
+      show2:false,
       user_log: {
         username: "",
         passwd: "",
@@ -258,10 +266,24 @@ export default {
         firstname: "",
         lastname: "",
       },
+       nameRules: [
+        (name) => !!name || "Obligatorio",
+        (name) => name.length > 2 || "El nombre es muy corto",
+      ],
+      passwordRules: [(passwd) => !!passwd || "Obligatorio"],
+      passwdLogRules: [(passwd) => !!passwd || "Obligatorio"],
+      usernameLogRules: [(username) => !!username || "Obligatorio"],
     };
   },
   methods: {
+
     ...mapActions(["logUser", "registerUser"]),
+    cleanUserLog() {
+      this.user_reg.username=""
+      this.user_reg.firstname=""
+      this.user_reg.lastname=""
+      this.user_reg.passwd=""      
+    },    
      login() {
      
      this.logUser(this.user_log)
@@ -288,8 +310,11 @@ export default {
     },2000)
     
     },
+    
     register() {
-      this.registerUser(this.user_reg);
+      if(this.user_reg.username!=="" && this.user_reg.lastname!=="" && this.user_reg.passwd!=="" && this.user_reg.firstname!==""){
+         this.registerUser(this.user_reg);
+  this.dialogForm = false;
       console.log(this.user_reg)
        setTimeout(()=>{       
        this.messageReg = this.$store.getters.getMessageReg      
@@ -315,6 +340,17 @@ export default {
 
        
     },2000)
+      }else{
+        this.messageReg = "Debe llenar la información"
+         this.registerDialog = true;
+          this.typereg = "error"
+          setTimeout(()=>{
+             this.registerDialog = false; 
+
+          },2000)  
+
+      }
+     
       
     
     },
