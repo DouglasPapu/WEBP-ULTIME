@@ -217,7 +217,7 @@ export default {
         .then((res) => {
           if (res.status === 200) {
             let objGrade = {
-              pk_grade: res.data.params.pk_grade,
+              pk_grade: res.data.params.id,
               gr_percent: this.percent,
               gr_quantity: this.grade,
               fk_subject: this.fk_subject,
@@ -307,6 +307,7 @@ export default {
     async updateGrade() {
       this.isProgress = true;
       this.dialog = false;
+
       var gradeEdit = {
         fk_user: this.getUserLoged.id,
         fk_subject: this.fk_subject,

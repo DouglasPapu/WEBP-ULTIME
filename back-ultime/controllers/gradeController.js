@@ -50,6 +50,7 @@ exports.create = async (req, res, next) => {
         subject.fk_subject,
       ]);
       var id = obj.rows[0].pk_grade;
+      console.log(id);
       res.status(200).send({ params: { id } });
     }
   } else {
@@ -125,6 +126,7 @@ exports.update = async (req, res, next) => {
       if (gr_P + p_sub > 100) {
         res.status(406).send({ message: "the total percentage exceeded 100" });
       } else {
+        console.log(grade.pk_grade);
         var sql3 =
           'update public."Grade" set gr_percent = $1, gr_quantity = $2 where pk_grade = $3';
 
