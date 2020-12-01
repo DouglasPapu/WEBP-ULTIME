@@ -46,12 +46,12 @@
                 <v-card-text>
                   <span
                     >Hora de inicio:<br />
-                    {{ selectedEvent.start }}</span
+                    {{ timeInitDetails }}</span
                   >
                   <v-spacer></v-spacer>
                   <span
                     >Hora de finalización: <br />
-                    {{ selectedEvent.end }}</span
+                    {{ timeFinalDetails }}</span
                   >
                 </v-card-text>
                 <v-card-actions>
@@ -283,6 +283,8 @@ export default {
     menu2: false,
     menu3: false,
     isValid: true,
+    timeInitDetails: null,
+    timeFinalDetails: null,
     dialogDelete: false,
     subjectRules: [(name) => !!name || "El nombre de la materia es requerido"],
     dayRules: [(day) => !!day || "El día es requerido"],
@@ -308,6 +310,8 @@ export default {
         this.selectedEvent = event;
         this.selectedElement = nativeEvent.target;
         setTimeout(() => (this.selectedOpen = true), 10);
+        this.timeInitDetails = this.selectedEvent.start.substr(11, 16);
+        this.timeFinalDetails = this.selectedEvent.end.substr(11, 16);
       };
 
       if (this.selectedOpen) {
