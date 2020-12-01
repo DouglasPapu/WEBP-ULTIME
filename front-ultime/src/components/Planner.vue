@@ -12,8 +12,8 @@
           <v-btn fab text small color="grey darken-2" @click="prev">
             <v-icon small> mdi-chevron-left </v-icon>
           </v-btn>
-          <v-toolbar-title v-if="$refs.calendar">
-            {{ $refs.calendar.title }}
+          <v-toolbar-title v-if="$refs.planner">
+            {{ $refs.planner.title }}
           </v-toolbar-title>
           <v-btn fab text small color="grey darken-2" @click="next">
             <v-icon small> mdi-chevron-right </v-icon>
@@ -21,12 +21,14 @@
         </v-toolbar>
         <v-sheet height="600" elevation="15">
           <v-calendar
-            ref="calendar"
+            ref="planner"
             v-model="value"
             color="primary"
             type="week"
             :events="events"
             :event-ripple="false"
+            :event-color="getEventColor"
+            locale="es"
           >
           </v-calendar>
           <v-card>
@@ -61,18 +63,29 @@
               <v-row>
                 <v-col cols="12" sm="6">
                   <v-text-field
-                    label="Nombre de la tarea"
+                    label="Nombre"
                     required
+                    :value="createEvent.name"
                     prepend-icon="mdi-ballot-outline"
                   >
                   </v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6">
+                  <v-text-field
+                    label="Descipcion"
+                    required
+                    :value="createEvent.description"
+                    prepend-icon="mdi-text"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12" sm="6">
                   <v-menu
                     ref="menu"
                     v-model="menu"
                     :close-on-content-click="false"
-                    :return-value.sync="date"
+                    :value="date"
                     transition="scale-transition"
                     offset-y
                     min-width="290px"
@@ -102,8 +115,6 @@
                     </v-date-picker>
                   </v-menu>
                 </v-col>
-              </v-row>
-              <v-row>
                 <v-col cols="12" sm="6">
                   <v-menu
                     ref="menuTimeStart"
@@ -143,6 +154,8 @@
                     </v-time-picker>
                   </v-menu>
                 </v-col>
+              </v-row>
+              <v-row>
                 <v-col cols="12" sm="6">
                   <v-menu
                     ref="menuTimeEnd"
@@ -178,6 +191,16 @@
                     </v-time-picker>
                   </v-menu>
                 </v-col>
+                <v-col cols="12" md="6">
+                  <v-checkbox
+                    v-model="createEvent.state"
+                    label="Done"
+                    color="success"
+                    :value="createEvent.state"
+                    prepend-icon="check_circle"
+                    required
+                  ></v-checkbox>
+                </v-col>
               </v-row>
             </v-container>
           </v-card-text>
@@ -209,9 +232,14 @@
             <span>{{ new Date(item.end).toLocaleString() }}</span>
           </template>
           <template v-slot:item.state="{ item }">
-            <v-icon :color="item.state ? 'green darken-2' : 'red'">{{
+            <!-- <v-icon :color="item.state ? 'green darken-2' : 'red'">{{
               item.state ? "how_to_reg" : "unpublished"
-            }}</v-icon>
+            }}</v-icon> -->
+            <v-checkbox
+              :checked="item.state ? 'true' : 'false'"
+              disabled="true"
+            >
+            </v-checkbox>
           </template>
         </v-data-table>
       </v-col>
@@ -220,6 +248,7 @@
 </template>
 
 <script>
+import axios from "../plugins/axios";
 export default {
   data: () => ({
     value: "",
@@ -228,17 +257,10 @@ export default {
         name: "Prueba",
         start: "2020-11-25 07:00",
         end: "2020-11-25 08:00",
+        color: "indigo",
       },
     ],
-    colors: [
-      "#2196F3",
-      "#3F51B5",
-      "#673AB7",
-      "#00BCD4",
-      "#4CAF50",
-      "#FF9800",
-      "#757575",
-    ],
+    colors: ["blue", "indigo", "deep-purple", "cyan", "green", "orange"],
     menu: false,
     menuTimeStart: false,
     menuTimeEnd: false,
@@ -246,21 +268,28 @@ export default {
     timeEnd: null,
     date: new Date().toISOString().substr(0, 10),
     dialog: false,
-    createEvent: null,
+    createEvent: {
+      name: "",
+      description: "",
+      start: "",
+      end: "",
+      state: "",
+      color: "",
+    },
     headers: [
       { text: "Name", value: "name" },
-      { text: "Date", value: "date" },
+      { text: "Desciption", value: "description" },
       { text: "Start Time", value: "start" },
       { text: "End Time", value: "end" },
       { text: "State", value: "state" },
     ],
   }),
   mounted() {
-    this.$refs.calendar.checkChange();
+    this.$refs.planner.checkChange();
   },
   computed: {
     cal() {
-      return this.ready ? this.$refs.calendar : null;
+      return this.ready ? this.$refs.planner : null;
     },
     nowY() {
       return this.cal ? this.cal.timeToY(this.cal.times.now) + "px" : "-10px";
@@ -268,15 +297,19 @@ export default {
   },
   methods: {
     saveEvent() {
-      this.createEvent = {
-        name: "",
-        start: this.timeStart,
-        date: this.date,
-        end: this.timeEnd,
-        state: "",
-        color: this.rndElement(this.colors),
-        timed: true,
-      };
+      let apiUrl = "api/planner/create-planner";
+      axios.post(apiUrl, this.createEvent).then(() => {
+        this.createEvent = {
+          name: "",
+          description: "",
+          start: this.date + " " + this.timeStart,
+          end: this.date + " " + this.timeEnd,
+          color: this.rndElement(this.colors),
+        };
+      }).catch((error) => {
+        console.log(error);
+      });
+
       console.log(this.createEvent);
       this.events.push(this.createEvent);
       this.dialog = false;
@@ -291,16 +324,7 @@ export default {
       ).getTime();
     },
     getEventColor(event) {
-      const rgb = parseInt(event.color.substring(1), 16);
-      const r = (rgb >> 16) & 0xff;
-      const g = (rgb >> 8) & 0xff;
-      const b = (rgb >> 0) & 0xff;
-
-      return event === this.dragEvent
-        ? `rgba(${r}, ${g}, ${b}, 0.7)`
-        : event === this.createEvent
-        ? `rgba(${r}, ${g}, ${b}, 0.7)`
-        : event.color;
+      return event.color;
     },
 
     rnd(a, b) {
@@ -310,50 +334,21 @@ export default {
       return arr[this.rnd(0, arr.length - 1)];
     },
     prev() {
-      this.$refs.calendar.prev();
+      this.$refs.planner.prev();
     },
     next() {
-      this.$refs.calendar.next();
+      this.$refs.planner.next();
     },
   },
 };
 </script>
 
 <style scoped lang="scss">
-.v-event-draggable {
-  padding-left: 6px;
-}
-
 .v-event-timed {
   user-select: none;
   -webkit-user-select: none;
 }
 
-.v-event-drag-bottom {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 4px;
-  height: 4px;
-  cursor: ns-resize;
-
-  &::after {
-    display: none;
-    position: absolute;
-    left: 50%;
-    height: 4px;
-    border-top: 1px solid white;
-    border-bottom: 1px solid white;
-    width: 16px;
-    margin-left: -8px;
-    opacity: 0.8;
-    content: "";
-  }
-
-  &:hover::after {
-    display: block;
-  }
-}
 .v-current-time {
   height: 2px;
   background-color: #ea4335;

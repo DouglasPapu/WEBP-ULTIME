@@ -10,6 +10,7 @@ var usersRouter = require("./routes/users");
 var subjectsRouter = require("./routes/subjects");
 var scheduleRouter = require("./routes/schedules");
 var gradeRouter = require("./routes/grades");
+var plannerRouter = require("./routes/planner");
 
 var app = express();
 
@@ -27,7 +28,11 @@ app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/api/subjects", subjectsRouter);
 app.use("/api/schedules", scheduleRouter);
+<<<<<<< HEAD
 app.use("/api/grades", gradeRouter);
+=======
+app.use("/api/planner", plannerRouter);
+>>>>>>> juanmg
 app.use(cookieParser("hoy es lunes"));
 app.use(express.static(path.join(__dirname, "public")));
 
