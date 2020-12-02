@@ -19,7 +19,51 @@ exports.get = async (req, res, next) => {
     res.send(validate2.rows);
   }
 };
+exports.calculate = async (req, res, next) => {
+  
+  var sql2 = 'SELECT * FROM public."Grade" WHERE fk_subject = $1';
+  
+  var response = await db.query(sql2, [req.body.fk_subject]);
 
+  if (response.rowCount === 0) {
+    res.status(406).send({ message: "The subject doesn't exist" });
+  } else {
+   
+    
+    let data =0
+    let totalpercent=0;
+    response.rows.forEach(function (grade){
+      data+= grade.gr_percent * grade.gr_quantity
+      totalpercent += parseInt(grade.gr_percent,10);
+
+    })
+    if(totalpercent === 100){
+      data = data/100;
+      res.status(200).send({message:'Tu nota final es: '+ data});
+    }else{
+      data = data/100;           
+      let percent =  100 -totalpercent
+      percent = percent/100
+      let actual =Math.round((3- data) *100)/100;
+      let val = Math.round((actual/ percent) *100)/100
+      if(val<=5){
+        res.status(200).send({message :'Necesitas '+val+' en el ' +percent*100+'% , tu nota actual es: '+data})
+
+      }else if(val > 5){
+        res.status(200).send({message: 'Nada que hacer, tu nota actual es: '+data+' :('})
+      }
+      else{
+        res.status(200).send({message: 'Estas a salvo, tu nota actual es: '+data})
+      }
+      
+    }
+    //console.log(data/100)
+    //console.log(response.rows.)
+
+    
+   // res.send(response.rows);
+  }
+};
 exports.create = async (req, res, next) => {
   var sql3 = 'SELECT * FROM public."Grade" WHERE fk_subject = $1';
   let grade = {
