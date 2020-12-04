@@ -46,6 +46,10 @@ exports.calculate = async (req, res, next) => {
       percent = percent/100
       let actual =Math.round((3- data) *100)/100;
       let val = Math.round((actual/ percent) *100)/100
+      if(val <0){
+        res.status(200).send({message:'Ya pasaste tu nota es : '+ data});
+
+      }
       if(val<=5){
         res.status(200).send({message :'Necesitas '+val+' en el ' +percent*100+'% , tu nota actual es: '+data})
 
