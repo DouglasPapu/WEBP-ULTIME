@@ -26,7 +26,7 @@
               end="2020-11-29"
               :short-weekdays="false"
               @click:event="showEvent"
-            ></v-calendar>
+            ><template v-slot:day-label-header="{}">{{undefined}} </template></v-calendar>
             <v-menu
               v-model="selectedOpen"
               :close-on-content-click="false"
@@ -363,9 +363,6 @@ export default {
 }
 .psub {
   margin-top: 20px;
-}
-.theme--light.v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
-  display: none;
 }
 .theme--light.v-calendar-daily
   .v-calendar-daily_head-day.v-past
