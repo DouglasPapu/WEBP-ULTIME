@@ -14,12 +14,4 @@ const connection = new Pool({
   }
 });
 
-
-/* const connection = new Pool({
-  host: "localhost",
-  user: "postgres",
-  password: "postgres",
-  database: "postgres",
-  port: "5432",
-}); */
 module.exports = connection;
