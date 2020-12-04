@@ -315,7 +315,7 @@ export default {
       if(this.user_reg.username!=="" && this.user_reg.lastname!=="" && this.user_reg.passwd!=="" && this.user_reg.firstname!==""){
          this.registerUser(this.user_reg);
   this.dialogForm = false;
-      console.log(this.user_reg)
+      //console.log(this.user_reg)
        setTimeout(()=>{       
        this.messageReg = this.$store.getters.getMessageReg      
         if(this.messageReg === "Error: el nombre de usuario ya existe."){  

@@ -99,8 +99,21 @@
             @click="addGradeToSubject()"
             ><v-icon left> mdi-plus-circle-outline </v-icon> Agregar nota
           </v-btn>
+          <v-btn
+            class="ma-2"
+            outlined
+            color="primary"            
+            @click="calculateNote()"
+            > Calcular nota
+          </v-btn>
         </v-row>
       </v-form>
+      <v-dialog :value="dialogNotes" max-width="300">
+          <v-alert :value="dialogNotes" dismissible type="success">
+          {{ messageNotes }}
+        </v-alert>
+
+        </v-dialog>
     </div>
     <!-- Dialog to update a grade -->
     <v-dialog v-model="dialog" persistent max-width="600px">
@@ -142,6 +155,7 @@
           </v-btn>
         </v-card-actions>
       </v-card>
+      
     </v-dialog>
     <Alert></Alert>
   </v-container>
@@ -157,6 +171,8 @@ export default {
   props: ["fk_subject"],
   data: () => ({
     grades: [],
+    messageNotes:"",
+    dialogNotes:false,
     grade: 0,
     percent: 0,
     updQuantity: 0,
@@ -204,6 +220,40 @@ export default {
           };
           this.$store.dispatch("callAlert", errorMessage);
         });
+    },
+    async calculateNote(){
+      
+      let data ={
+        fk_subject: this.fk_subject
+      }
+      console.log("message",this.messageNotes)
+      await axios.post("http://localhost:3000/api/grades/calculate", data)
+      .then((res)=>{
+        if(res.status === 200){ 
+             
+          this.messageNotes = res.data.message
+          this.dialogNotes = true; 
+           setTimeout(()=>{
+             this.dialogNotes = false; 
+
+          },3000)            
+        }       
+
+      }).catch((error) => {
+          let message1 = "";
+          switch (error.response.data.message) {
+            case "The subject doesn't exist": {
+              message1 = "La materia no existe";
+              break;
+            }
+            default: {
+              message1 = "Algo salió mal. Intenta de nuevo";
+            }
+          }
+         this.messageNotes = message1;
+        });
+
+
     },
     async addGradeToSubject() {
       this.isProgress = true;
