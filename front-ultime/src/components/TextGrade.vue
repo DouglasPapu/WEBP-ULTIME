@@ -147,7 +147,7 @@
   </v-container>
 </template>
 <script>
-import axios from "axios";
+import axios from "../plugins/axios";
 import Alert from "./Alert";
 import Vuex from "vuex";
 export default {
@@ -176,7 +176,7 @@ export default {
   methods: {
     async getGrades() {
       await axios
-        .get("http://localhost:3000/api/grades/", {
+        .get("/api/grades/", {
           params: {
             fk_user: this.getUserLoged.id,
             fk_subject: this.fk_subject,
@@ -213,7 +213,7 @@ export default {
         fk_subject: this.fk_subject,
       };
       await axios
-        .post("http://localhost:3000/api/grades/", grade)
+        .post("/api/grades/", grade)
         .then((res) => {
           if (res.status === 200) {
             let objGrade = {
@@ -257,7 +257,7 @@ export default {
     async deleteGrade(payload) {
       this.isProgress = true;
       await axios
-        .delete("http://localhost:3000/api/grades/", {
+        .delete("/api/grades/", {
           params: {
             fk_user: this.getUserLoged.id,
             fk_subject: this.fk_subject,
@@ -316,7 +316,7 @@ export default {
         pk_grade: this.updPkgrade,
       };
       await axios
-        .put("http://localhost:3000/api/grades/", gradeEdit)
+        .put("/api/grades/", gradeEdit)
         .then((res) => {
           if (res.status === 200) {
             this.isProgress = false;

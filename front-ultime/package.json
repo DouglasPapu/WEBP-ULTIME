@@ -5,7 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "heroku": "cp -r dist/* ../back-ultime/public/ && cd ../back-ultime/ && git add . && git commit -m 'frontend updated' && git push heroku master"
   },
   "dependencies": {
     "axios": "^0.21.0",
