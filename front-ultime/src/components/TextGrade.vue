@@ -227,7 +227,7 @@ export default {
         fk_subject: this.fk_subject
       }
       console.log("message",this.messageNotes)
-      await axios.post("http://localhost:3000/api/grades/calculate", data)
+      await axios.post("/api/grades/calculate", data)
       .then((res)=>{
         if(res.status === 200){ 
              

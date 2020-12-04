@@ -47,7 +47,7 @@
                 <v-btn icon @click="dialogDelete = true">
                   <v-icon>mdi-delete</v-icon>
                 </v-btn>
-                <v-toolbar-title v-html="editEvent.name"></v-toolbar-title>
+                <v-toolbar-title v-html="selectedEvent.name"></v-toolbar-title>
                 <v-spacer></v-spacer>
               </v-toolbar>
               <v-card-text>
@@ -654,7 +654,7 @@ export default {
       nativeEvent.stopPropagation();
     },
     deleteTask() {
-      this.$store.dispatch("deleteTask", this.editEvent);
+      this.$store.dispatch("deleteTask", this.selectedEvent);
       this.$store.dispatch("getTasks");
       this.selectedOpen = false;
       this.dialogDelete = false;
