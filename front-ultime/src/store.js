@@ -100,6 +100,120 @@ export default new Vuex.Store({
           state.message = message1;
         });
     },
+    saveTask(state, payload) {
+      payload.fk_user = state.userlog.id;
+
+      axios.post("http://localhost:3000/api/tasks/create-task", payload)
+        .then((res) => {
+          if (res.status == 200) {
+            var newTask = {
+              id: res.data.params.id,
+              name: payload.name,
+              description: payload.description,
+              start: payload.day + " " + payload.start,
+              end: payload.day + " " + payload.end,
+              start_time: payload.start,
+              end_time: payload.end,
+              day: payload.day,
+              done: payload.done,
+              color: payload.color
+            };
+            state.tasks.push(newTask);
+            state.typeMessage = "success";
+            state.message = "Se ha agregado la tarea con éxito.";
+          }
+        })
+        .catch((error) => {
+          state.typeMessage = "error";
+          state.message = error.response.data.message;
+        });
+    },
+    editTask(state, payload) {
+      axios
+        .put("http://localhost:3000/api/tasks/update-task", payload)
+        .then((res) => {
+          if (res.status === 200) {
+            let taskN = this.tasks.find(
+              (tsk) => tsk.pk_task === payload.id
+            );
+            let i = this.tasks.indexOf(taskN);
+            var updTask = {
+              id: payload.id,
+              name: payload.name,
+              description: payload.description,
+              start: payload.day + " " + payload.start_time,
+              end: payload.day + " " + payload.end_time,
+              start_time: payload.start_time,
+              end_time: payload.end_time,
+              day: payload.day,
+              done: payload.done,
+              color: payload.color
+            }
+            this.tasks[i] = updTask;
+            state.activeAlert = true;
+            state.typeMessage = "success";
+            state.message = "Se ha borrado la tarea con éxito.";
+          }
+        })
+        .catch((error) => {
+          state.typeMessage = "error";
+          state.message = error.response.data.message;
+        });
+    },
+    deleteTask(state, payload) {
+      axios
+        .delete("http://localhost:3000/api/tasks/delete-task", {
+          params: { fk_user: state.userlog.id, id: payload.id },
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            state.tasks.forEach((element, index) => {
+              if (element.id == payload.id) {
+                state.tasks.splice(index, 1);
+              }
+            });
+            state.activeAlert = true;
+            state.typeMessage = "success";
+            state.message = "Se ha borrado la tarea con éxito.";
+          }
+        })
+        .catch((error, res) => {
+          let message1 = "";
+          switch (error.response.data.message) {
+            case "The user doesn't exist": {
+              console.log("Entro aqui juas")
+              console.log(res.status)
+              message1 = "El usuario no existe. Por favor regístrate";
+              break;
+            }
+          }
+          state.typeMessage = "error";
+          state.message = message1;
+        });
+
+    },
+    SET_TASKS(state, payload) {
+      var replTasks = [];
+      if (payload.lenght !== 0) {
+        payload.forEach((element) => {
+          var newTask = {
+            id: element.pk_task,
+            name: element.tk_name,
+            description: element.tk_description,
+            start: element.tk_day + " " + element.start_time,
+            end: element.tk_day + " " + element.end_time,
+            start_time: element.start_time,
+            end_time: element.end_time,
+            day: element.tk_day,
+            done: element.tk_done,
+            color: element.color
+          };
+          replTasks.push(newTask);
+        });
+        state.tasks = replTasks;
+        this.state.loading = false;
+      }
+    },
     logUser(state, payload) {
       axios
         .post("http://localhost:3000/users/login", payload)
@@ -215,6 +329,12 @@ export default new Vuex.Store({
     addSubjectToSchedule({ commit }, payload) {
       commit("addSubjectToSchedule", payload);
     },
+    saveTask({ commit }, payload) {
+      commit("saveTask", payload);
+    },
+    editTask({ commit }, payload) {
+      commit("editTask", payload);
+    },
     logUser({ commit }, payload) {
       commit("logUser", payload);
     },
@@ -233,11 +353,26 @@ export default new Vuex.Store({
           }
         });
     },
+    getTasks({ commit }) {
+      this.state.loading = true;
+      axios
+        .get("http://localhost:3000/api/tasks/", {
+          params: { fk_user: this.state.userlog.id }
+        })
+        .then((res) => {
+          if (res.status === 304 || res.status === 200) {
+            commit("SET_TASKS", res.data);
+          }
+        });
+    },
     refreshAlert({ commit }) {
       commit("refreshAlert");
     },
     deleteSubject({ commit }, payload) {
       commit("deleteSubject", payload);
+    },
+    deleteTask({ commit }, payload) {
+      commit("deleteTask", payload);
     },
     callAlert({ commit }, payload) {
       commit("callAlert", payload);

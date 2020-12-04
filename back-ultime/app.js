@@ -11,6 +11,7 @@ var subjectsRouter = require("./routes/subjects");
 var scheduleRouter = require("./routes/schedules");
 var gradeRouter = require("./routes/grades");
 var plannerRouter = require("./routes/planner");
+var tasksRouter = require("./routes/tasks");
 
 var app = express();
 
@@ -30,6 +31,7 @@ app.use("/api/subjects", subjectsRouter);
 app.use("/api/schedules", scheduleRouter);
 app.use("/api/grades", gradeRouter);
 app.use("/api/planner", plannerRouter);
+app.use("/api/tasks", tasksRouter);
 app.use(cookieParser("hoy es lunes"));
 app.use(express.static(path.join(__dirname, "public")));
 
