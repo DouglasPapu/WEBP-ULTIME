@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import axios from "axios";
+import axios from "./plugins/axios";
 
 Vue.use(Vuex);
 
@@ -58,7 +58,7 @@ export default new Vuex.Store({
         }
       }
       axios
-        .post("http://localhost:3000/api/subjects/create-subject", payload)
+        .post("/api/subjects/create-subject", payload)
         .then((res) => {
           if (res.status === 200) {
             var objNew = {
@@ -103,7 +103,7 @@ export default new Vuex.Store({
     saveTask(state, payload) {
       payload.fk_user = state.userlog.id;
 
-      axios.post("http://localhost:3000/api/tasks/create-task", payload)
+      axios.post("/api/tasks/create-task", payload)
         .then((res) => {
           if (res.status == 200) {
             var newTask = {
@@ -130,7 +130,7 @@ export default new Vuex.Store({
     },
     editTask(state, payload) {
       axios
-        .put("http://localhost:3000/api/tasks/update-task", payload)
+        .put("/api/tasks/update-task", payload)
         .then((res) => {
           if (res.status === 200) {
             let taskN = this.tasks.find(
@@ -162,7 +162,7 @@ export default new Vuex.Store({
     },
     deleteTask(state, payload) {
       axios
-        .delete("http://localhost:3000/api/tasks/delete-task", {
+        .delete("/api/tasks/delete-task", {
           params: { fk_user: state.userlog.id, id: payload.id },
         })
         .then((res) => {
@@ -216,7 +216,7 @@ export default new Vuex.Store({
     },
     logUser(state, payload) {
       axios
-        .post("http://localhost:3000/users/login", payload)
+        .post("/users/login", payload)
         .then((res) => {
           if (res.status === 200) {
             state.userlog.username = res.data[0].username;
@@ -253,7 +253,7 @@ export default new Vuex.Store({
     },
     registerUser(state, payload) {
       axios
-        .post("http://localhost:3000/users/create", payload)
+        .post("/users/create", payload)
         .then((res) => {
           if (res.status === 200) {
             state.messageRegis = "Registro con éxito";
@@ -289,7 +289,7 @@ export default new Vuex.Store({
     },
     deleteSubject(state, payload) {
       axios
-        .delete("http://localhost:3000/api/subjects/", {
+        .delete("/api/subjects/", {
           params: { fk_user: state.userlog.id, id: payload.id },
         })
         .then((res) => {
@@ -344,7 +344,7 @@ export default new Vuex.Store({
     getSubjects({ commit }) {
       this.state.loading = true;
       axios
-        .get("http://localhost:3000/api/subjects/", {
+        .get("/api/subjects/", {
           params: { fk_user: this.state.userlog.id },
         })
         .then((res) => {
@@ -356,7 +356,7 @@ export default new Vuex.Store({
     getTasks({ commit }) {
       this.state.loading = true;
       axios
-        .get("http://localhost:3000/api/tasks/", {
+        .get("/api/tasks/", {
           params: { fk_user: this.state.userlog.id }
         })
         .then((res) => {

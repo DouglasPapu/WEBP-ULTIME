@@ -216,8 +216,8 @@
             <v-card-text align="center" class="headline font-weight-medium">
               Conoce a nuestro creadores:<br />
               <hr color="#FFFFF" />
-              Juan martin García<br />
-              Douglas Lopez <br />
+              Juan Martín García<br />
+              Douglas López <br />
               Laura Rubio <br />
             </v-card-text>
           </v-col>
