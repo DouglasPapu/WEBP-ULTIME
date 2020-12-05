@@ -49,16 +49,19 @@ exports.calculate = async (req, res, next) => {
       if(val <0){
         res.status(200).send({message:'Ya pasaste tu nota es : '+ data});
 
-      }
-      if(val<=5){
-        res.status(200).send({message :'Necesitas '+val+' en el ' +percent*100+'% , tu nota actual es: '+data})
+      }else{
+        if(val<=5){
+          res.status(200).send({message :'Necesitas '+val+' en el ' +percent*100+'% , tu nota actual es: '+data})
+  
+        }else if(val > 5){
+          res.status(200).send({message: 'Nada que hacer, tu nota actual es: '+data+' :('})
+        }
+        else{
+          res.status(200).send({message: 'Estas a salvo, tu nota actual es: '+data})
+        }
 
-      }else if(val > 5){
-        res.status(200).send({message: 'Nada que hacer, tu nota actual es: '+data+' :('})
       }
-      else{
-        res.status(200).send({message: 'Estas a salvo, tu nota actual es: '+data})
-      }
+      
       
     }
     //console.log(data/100)
